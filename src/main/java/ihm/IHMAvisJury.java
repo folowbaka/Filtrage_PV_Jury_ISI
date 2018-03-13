@@ -1,10 +1,7 @@
 package ihm;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -16,9 +13,7 @@ import io.SauvegardeRepertoire;
 import operation.DecisionJury;
 import operation.Statistiques;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -29,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import java.awt.Font;
 
 /**
  * GestionStagesJuryIsi crée une fenétre graphique pour sélectionner le pv de jury ISI au format PDF
@@ -43,6 +37,7 @@ public class IHMAvisJury extends JFrame{
 	private static final long serialVersionUID = 1L;
 
 	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat;
+	private JPanel jPanelCenter;
 	private JLabel message;
 	private File fileTXT, fileSourcePDF, fileDestPDF, fileDecisionJury, fileStats;
 	private File dirAvisJury, dirStats, dirDatasTxt, dirAvisJuryCSV, dirAvisJuryPDF;
@@ -86,71 +81,88 @@ public class IHMAvisJury extends JFrame{
 		this.setTitle("Gestion Stages Jury ISI");
 		this.setBounds(100, 100, 800, 250);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.getContentPane().setLayout(null);
+		this.getContentPane().setLayout(new BorderLayout());
+		this.jPanelCenter=new JPanel();
+		this.jPanelCenter.setLayout(new BoxLayout(this.jPanelCenter,BoxLayout.PAGE_AXIS));
+		JPanel jPanelPDF=new JPanel();
+        jPanelPDF.setLayout(new BoxLayout(jPanelPDF,BoxLayout.LINE_AXIS));
 
 		JLabel lblPDF = new JLabel("Source PDF");
-		lblPDF.setBounds(10, 10, 77, 15);
-		this.getContentPane().add(lblPDF);
+		jPanelPDF.add(lblPDF);
+        sourcePDF = new JTextField();
+        jPanelPDF.add(sourcePDF);
+        // Bouton pour le chargement du fichier PDF
+        findPDF = new JButton("...");
+        findPDF.setFont(new Font("Tahoma", Font.BOLD, 11));
+        jPanelPDF.add(findPDF);
+        this.jPanelCenter.add(jPanelPDF);
+
+        JPanel jPanelTxt=new JPanel();
+        jPanelTxt.setLayout(new BoxLayout(jPanelTxt,BoxLayout.LINE_AXIS));
 
 		JLabel lblTxt = new JLabel("Cible TXT");
-		lblTxt.setBounds(10, 65, 88, 15);
-		this.getContentPane().add(lblTxt);
+        jPanelTxt.add(lblTxt);
+        sourceTXT = new JTextField();
+        jPanelTxt.add(sourceTXT);
+        this.jPanelCenter.add(jPanelTxt);
 
-		JLabel lblCsv = new JLabel("Cible CSV");
-		lblCsv.setBounds(10, 120, 88, 15);
-		this.getContentPane().add(lblCsv);
+
+        // Bouton de conversion PDF --> TXT
+        JPanel jPanelBTxt=new JPanel();
+        jPanelBTxt.setLayout(new BoxLayout(jPanelBTxt,BoxLayout.LINE_AXIS));
+        conversionPdf_Txt = new JButton("Conversion  PDF >- TXT");
+        jPanelBTxt.add(Box.createHorizontalGlue());
+        jPanelBTxt.add(conversionPdf_Txt);
+        jPanelBTxt.add(Box.createHorizontalGlue());
+        this.jPanelCenter.add(jPanelBTxt);
+
+        JPanel jPanelCsv=new JPanel();
+        jPanelCsv.setLayout(new BoxLayout(jPanelCsv,BoxLayout.LINE_AXIS));
+
+        JLabel lblCsv = new JLabel("Cible CSV");
+        jPanelCsv.add(lblCsv);
+        cibleCSV = new JTextField();
+        jPanelCsv.add(cibleCSV);
+        this.jPanelCenter.add(jPanelCsv);
+
+        // Bouton pour la decisionJury
+        JPanel jPanelBCsv=new JPanel();
+        jPanelBCsv.setLayout(new BoxLayout(jPanelBCsv,BoxLayout.LINE_AXIS));
+        avisJury = new JButton("Générer avis jury");
+        jPanelBCsv.add(Box.createHorizontalGlue());
+        jPanelBCsv.add(avisJury);
+        jPanelBCsv.add(Box.createHorizontalGlue());
+        this.jPanelCenter.add(jPanelBCsv);
+
+        JPanel jPanelStat=new JPanel();
+        jPanelStat.setLayout(new BoxLayout(jPanelStat,BoxLayout.LINE_AXIS));
 
 		JLabel lblStat = new JLabel("Cible Stats");
-		lblStat.setBounds(10, 175, 88, 15);
-		this.getContentPane().add(lblStat);
+		jPanelStat.add(lblStat);
+        cibleStat = new JTextField();
+        jPanelStat.add(cibleStat);
+        this.jPanelCenter.add(jPanelStat);
 
-		sourcePDF = new JTextField();
-		sourcePDF.setBounds(108, 8, 627, 20);
-		this.getContentPane().add(sourcePDF);
-
-		sourceTXT = new JTextField();
-		sourceTXT.setBounds(108, 59, 627, 20);
-		this.getContentPane().add(sourceTXT);
-
-		cibleCSV = new JTextField();
-		cibleCSV.setBounds(108, 112, 627, 20);
-		this.getContentPane().add(cibleCSV);
-
-		cibleStat = new JTextField();
-		cibleStat.setBounds(108, 170, 627, 20);
-		this.getContentPane().add(cibleStat);
-
-		// Bouton pour le chargement du fichier PDF 
-		findPDF = new JButton("...");
-		findPDF.setFont(new Font("Tahoma", Font.BOLD, 11));
-		findPDF.setBounds(740, 10, 33, 20);
-		this.getContentPane().add(findPDF);
-
-		// Bouton de conversion PDF --> TXT 
-		conversionPdf_Txt = new JButton("Conversion  PDF >- TXT");
-		conversionPdf_Txt.setBounds(296, 32, 176, 20);
-		this.getContentPane().add(conversionPdf_Txt);
-
-		// Bouton pour la decisionJury 
-		avisJury = new JButton("Générer avis jury");
-		avisJury.setBounds(296, 85, 176, 20);
-		this.getContentPane().add(avisJury);
-
-		// Bouton pour les statistiques
+        // Bouton pour les statistiques
+        JPanel jPanelBStat=new JPanel();
+        jPanelBStat.setLayout(new BoxLayout(jPanelBStat,BoxLayout.LINE_AXIS));
 		statistique = new JButton("Générer statistiques");
-		statistique.setBounds(300, 140, 176, 20);
-		this.getContentPane().add(statistique);
+		jPanelBStat.add(Box.createHorizontalGlue());
+		jPanelBStat.add(statistique);
+        jPanelBStat.add(Box.createHorizontalGlue());
+        this.jPanelCenter.add(jPanelBStat);
 
-		message = new JLabel("");
-		message.setBounds(10, 200, 1000, 20);
-		this.getContentPane().add(message);
-
-		// Bouton pour quitter l'application
-		exit = new JButton("Quitter");
-		exit.setBounds(670, 200, 110, 20);
-		this.getContentPane().add(exit);
-
-		lockButton();
+        JPanel jPanelFootCenter=new JPanel();
+        jPanelFootCenter.setLayout(new BoxLayout(jPanelFootCenter,BoxLayout.LINE_AXIS));
+        message = new JLabel("");
+        jPanelFootCenter.add(message);
+        jPanelFootCenter.add(Box.createHorizontalGlue());
+        exit = new JButton("Quitter");
+        jPanelFootCenter.add(exit);
+        this.jPanelCenter.add(jPanelFootCenter);
+        // Bouton pour quitter l'application
+        this.getContentPane().add(this.jPanelCenter,BorderLayout.CENTER);
+        lockButton();
 	}
 
 	/**
