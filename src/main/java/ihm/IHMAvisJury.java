@@ -79,7 +79,8 @@ public class IHMAvisJury extends JFrame{
 	private void initialize() {
 		this.setVisible(true);
 		this.setTitle("Gestion Stages Jury ISI");
-		this.setBounds(100, 100, 800, 250);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setBounds(screenSize.width/2-(screenSize.width/2)/2,screenSize.height/2-(screenSize.height/2)/2,screenSize.width/2, screenSize.height/2);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setLayout(new BorderLayout());
 		this.jPanelCenter=new JPanel();
@@ -89,23 +90,26 @@ public class IHMAvisJury extends JFrame{
 
 		JLabel lblPDF = new JLabel("Source PDF");
 		jPanelPDF.add(lblPDF);
+		jPanelPDF.add(Box.createRigidArea(new Dimension(5,0)));
         sourcePDF = new JTextField();
         jPanelPDF.add(sourcePDF);
+		jPanelPDF.add(Box.createRigidArea(new Dimension(5,0)));
         // Bouton pour le chargement du fichier PDF
         findPDF = new JButton("...");
         findPDF.setFont(new Font("Tahoma", Font.BOLD, 11));
         jPanelPDF.add(findPDF);
         this.jPanelCenter.add(jPanelPDF);
-
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
         JPanel jPanelTxt=new JPanel();
         jPanelTxt.setLayout(new BoxLayout(jPanelTxt,BoxLayout.LINE_AXIS));
 
 		JLabel lblTxt = new JLabel("Cible TXT");
         jPanelTxt.add(lblTxt);
+        jPanelTxt.add(Box.createRigidArea(new Dimension(5,0)));
         sourceTXT = new JTextField();
         jPanelTxt.add(sourceTXT);
         this.jPanelCenter.add(jPanelTxt);
-
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
         // Bouton de conversion PDF --> TXT
         JPanel jPanelBTxt=new JPanel();
@@ -115,15 +119,17 @@ public class IHMAvisJury extends JFrame{
         jPanelBTxt.add(conversionPdf_Txt);
         jPanelBTxt.add(Box.createHorizontalGlue());
         this.jPanelCenter.add(jPanelBTxt);
-
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
         JPanel jPanelCsv=new JPanel();
         jPanelCsv.setLayout(new BoxLayout(jPanelCsv,BoxLayout.LINE_AXIS));
 
         JLabel lblCsv = new JLabel("Cible CSV");
         jPanelCsv.add(lblCsv);
+        jPanelCsv.add(Box.createRigidArea(new Dimension(5,0)));
         cibleCSV = new JTextField();
         jPanelCsv.add(cibleCSV);
         this.jPanelCenter.add(jPanelCsv);
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
         // Bouton pour la decisionJury
         JPanel jPanelBCsv=new JPanel();
@@ -133,15 +139,18 @@ public class IHMAvisJury extends JFrame{
         jPanelBCsv.add(avisJury);
         jPanelBCsv.add(Box.createHorizontalGlue());
         this.jPanelCenter.add(jPanelBCsv);
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
         JPanel jPanelStat=new JPanel();
         jPanelStat.setLayout(new BoxLayout(jPanelStat,BoxLayout.LINE_AXIS));
 
 		JLabel lblStat = new JLabel("Cible Stats");
 		jPanelStat.add(lblStat);
+		jPanelStat.add(Box.createRigidArea(new Dimension(5,0)));
         cibleStat = new JTextField();
         jPanelStat.add(cibleStat);
         this.jPanelCenter.add(jPanelStat);
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
         // Bouton pour les statistiques
         JPanel jPanelBStat=new JPanel();
