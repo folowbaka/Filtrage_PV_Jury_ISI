@@ -49,7 +49,7 @@ public class Launcher {
 			//File file4 = new File("src/test/PV ISI 2.txt");//Fichier de test 3
 			//File file5 = new File("src/test/PV ISI 4.txt");
 			//File file6 = new File("src/test/PV ISI 6.txt");
-			List<Etudiant> etudiants = GestionData.listeEtudiant(file);//Test sur les fichiers etudiants
+			List<Etudiant> etudiants = GestionData.listeEtudiant(file,false);//Test sur les fichiers etudiants
 			Iterator<Etudiant> it = etudiants.iterator();
 			while (it.hasNext()) {
 				Etudiant etudiant = it.next();

@@ -38,7 +38,7 @@ public abstract class Statistiques {
 		PrintWriter pw;
 		bw = new BufferedWriter(fw);
 		pw = new PrintWriter(bw);
-		List<Etudiant> etudiants = GestionData.listeEtudiant(new File(nomFichierTexte));
+		List<Etudiant> etudiants = GestionData.listeEtudiant(new File(nomFichierTexte),false);
 		Iterator<Etudiant> it = etudiants.iterator();
 
 		pw.println("Nom Ue;Total;Reussie;Ratee;%Reussie;A;B;C;D;E;F/FX;Autres");

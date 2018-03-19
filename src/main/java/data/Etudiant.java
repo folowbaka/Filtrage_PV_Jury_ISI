@@ -1,5 +1,7 @@
 package data;
 
+import main.java.data.Observation;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +34,7 @@ public class Etudiant {
 	/**liste des modules fait par l'etudiant*/
 	private List<Module> modules = new ArrayList<Module>();
 
+	private Observation observation;
 	/**
 	 * @param nom le nom de l'etudiant
 	 * @param prenom le prenom de l'etudiant
@@ -144,6 +147,10 @@ public class Etudiant {
 	 */
 	public void setNbSemestres(int nbSemestres) {
 		this.nbSemestres = nbSemestres;
+	}
+
+	public void setObservation(Observation observation) {
+		this.observation = observation;
 	}
 
 	@Override

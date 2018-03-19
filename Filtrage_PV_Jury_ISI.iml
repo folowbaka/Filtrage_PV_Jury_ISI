@@ -24,5 +24,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="pdfbox-app-2.0.3" level="project" />
+    <orderEntry type="library" name="meka-1.9.1-sources" level="project" />
   </component>
 </module>

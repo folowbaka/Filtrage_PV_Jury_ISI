@@ -2,10 +2,12 @@ package ihm;
 
 import javax.swing.*;
 
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import main.java.operation.Modele;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
@@ -36,12 +38,14 @@ public class IHMAvisJury extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 
-	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat;
+	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat,cibleData;
 	private JPanel jPanelCenter;
 	private JLabel message;
-	private File fileTXT, fileSourcePDF, fileDestPDF, fileDecisionJury, fileStats;
-	private File dirAvisJury, dirStats, dirDatasTxt, dirAvisJuryCSV, dirAvisJuryPDF;
-	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique;
+	private File fileTXT, fileSourcePDF, fileDestPDF, fileDecisionJury, fileStats,fileDataSet;
+	private File dirAvisJury, dirStats, dirDatasTxt, dirAvisJuryCSV, dirAvisJuryPDF,dirDataSet;
+	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique,bData;
+	private int ScreenWith;
+	private int ScreenHeight;
 
 	/**
 	 * Creation de l'application.
@@ -80,7 +84,9 @@ public class IHMAvisJury extends JFrame{
 		this.setVisible(true);
 		this.setTitle("Gestion Stages Jury ISI");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		this.setBounds(screenSize.width/2-(screenSize.width/2)/2,screenSize.height/2-(screenSize.height/2)/2,screenSize.width/2, screenSize.height/2);
+        this.ScreenWith=screenSize.width;
+        this.ScreenHeight=screenSize.height;
+		this.setBounds(this.ScreenWith/2-(this.ScreenWith/2)/2,this.ScreenHeight/2-(this.ScreenHeight/2)/2,1000,500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setLayout(new BorderLayout());
 		this.jPanelCenter=new JPanel();
@@ -88,26 +94,28 @@ public class IHMAvisJury extends JFrame{
 		JPanel jPanelPDF=new JPanel();
         jPanelPDF.setLayout(new BoxLayout(jPanelPDF,BoxLayout.LINE_AXIS));
 
-		JLabel lblPDF = new JLabel("Source PDF");
+		JLabel lblPDF =this.createLabelCenter("Source PDF");
 		jPanelPDF.add(lblPDF);
-		jPanelPDF.add(Box.createRigidArea(new Dimension(5,0)));
-        sourcePDF = new JTextField();
+		jPanelPDF.add(Box.createRigidArea(new Dimension(20,0)));
+        sourcePDF = this.createTextFieldCenter();
         jPanelPDF.add(sourcePDF);
 		jPanelPDF.add(Box.createRigidArea(new Dimension(5,0)));
         // Bouton pour le chargement du fichier PDF
         findPDF = new JButton("...");
         findPDF.setFont(new Font("Tahoma", Font.BOLD, 11));
+        findPDF.setMaximumSize(new Dimension(50,35));
         jPanelPDF.add(findPDF);
         this.jPanelCenter.add(jPanelPDF);
 		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
         JPanel jPanelTxt=new JPanel();
         jPanelTxt.setLayout(new BoxLayout(jPanelTxt,BoxLayout.LINE_AXIS));
 
-		JLabel lblTxt = new JLabel("Cible TXT");
+		JLabel lblTxt = this.createLabelCenter("Cible TXT");
         jPanelTxt.add(lblTxt);
-        jPanelTxt.add(Box.createRigidArea(new Dimension(5,0)));
-        sourceTXT = new JTextField();
+        jPanelTxt.add(Box.createRigidArea(new Dimension(20,0)));
+        sourceTXT = this.createTextFieldCenter();
         jPanelTxt.add(sourceTXT);
+        jPanelTxt.add(Box.createRigidArea(new Dimension(50,0)));
         this.jPanelCenter.add(jPanelTxt);
 		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
@@ -123,11 +131,12 @@ public class IHMAvisJury extends JFrame{
         JPanel jPanelCsv=new JPanel();
         jPanelCsv.setLayout(new BoxLayout(jPanelCsv,BoxLayout.LINE_AXIS));
 
-        JLabel lblCsv = new JLabel("Cible CSV");
+        JLabel lblCsv = this.createLabelCenter("Cible CSV");
         jPanelCsv.add(lblCsv);
-        jPanelCsv.add(Box.createRigidArea(new Dimension(5,0)));
-        cibleCSV = new JTextField();
+        jPanelCsv.add(Box.createRigidArea(new Dimension(20,0)));
+        cibleCSV =this.createTextFieldCenter();
         jPanelCsv.add(cibleCSV);
+        jPanelCsv.add(Box.createRigidArea(new Dimension(50,0)));
         this.jPanelCenter.add(jPanelCsv);
 		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
@@ -144,11 +153,12 @@ public class IHMAvisJury extends JFrame{
         JPanel jPanelStat=new JPanel();
         jPanelStat.setLayout(new BoxLayout(jPanelStat,BoxLayout.LINE_AXIS));
 
-		JLabel lblStat = new JLabel("Cible Stats");
+		JLabel lblStat = this.createLabelCenter("Cible Stats");
 		jPanelStat.add(lblStat);
-		jPanelStat.add(Box.createRigidArea(new Dimension(5,0)));
-        cibleStat = new JTextField();
+		jPanelStat.add(Box.createRigidArea(new Dimension(20,0)));
+        cibleStat = this.createTextFieldCenter();
         jPanelStat.add(cibleStat);
+        jPanelStat.add(Box.createRigidArea(new Dimension(50,0)));
         this.jPanelCenter.add(jPanelStat);
 		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
@@ -160,6 +170,27 @@ public class IHMAvisJury extends JFrame{
 		jPanelBStat.add(statistique);
         jPanelBStat.add(Box.createHorizontalGlue());
         this.jPanelCenter.add(jPanelBStat);
+        this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
+
+        JPanel jPanelData=new JPanel();
+        jPanelData.setLayout(new BoxLayout(jPanelData,BoxLayout.LINE_AXIS));
+        JLabel lblData=this.createLabelCenter("Cible Dataset");
+        jPanelData.add(lblData);
+        jPanelData.add(Box.createRigidArea(new Dimension(20,0)));
+        cibleData = this.createTextFieldCenter();
+        jPanelData.add(cibleData);
+        jPanelData.add(Box.createRigidArea(new Dimension(50,0)));
+        this.jPanelCenter.add(jPanelData);
+        this.jPanelCenter.add(Box.createRigidArea(new Dimension(5,5)));
+
+        JPanel jPanelBData=new JPanel();
+        jPanelBData.setLayout(new BoxLayout(jPanelBData,BoxLayout.LINE_AXIS));
+        bData = new JButton("Générer Dataset");
+        jPanelBData.add(Box.createHorizontalGlue());
+        jPanelBData.add(bData);
+        jPanelBData.add(Box.createHorizontalGlue());
+        this.jPanelCenter.add(jPanelBData);
+        this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
         JPanel jPanelFootCenter=new JPanel();
         jPanelFootCenter.setLayout(new BoxLayout(jPanelFootCenter,BoxLayout.LINE_AXIS));
@@ -169,7 +200,9 @@ public class IHMAvisJury extends JFrame{
         exit = new JButton("Quitter");
         jPanelFootCenter.add(exit);
         this.jPanelCenter.add(jPanelFootCenter);
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(5,5)));
         // Bouton pour quitter l'application
+		this.jPanelCenter.setBorder(new EmptyBorder(10,10,10,10));
         this.getContentPane().add(this.jPanelCenter,BorderLayout.CENTER);
         lockButton();
 	}
@@ -269,6 +302,16 @@ public class IHMAvisJury extends JFrame{
 						message.setText("<html><span color='red'>la conversion du .pdf en .txt n'a pas été faite</span></html>");
 			}
 		});
+		bData.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(bData.isEnabled())
+					if(fileTXT.exists())
+						genererDataSet();
+					else
+						message.setText("<html><span color='red'>la conversion du .pdf en .txt n'a pas été faite</span></html>");
+			}
+		});
 
 		exit.addMouseListener(new MouseAdapter() {
 			@Override
@@ -334,6 +377,19 @@ public class IHMAvisJury extends JFrame{
 		}
 		else
 			Statistiques.ecritureStatistiques(sourceTXT.getText(), fileStats.getAbsolutePath());
+	}
+
+	private void genererDataSet() {
+		if(fileDataSet.exists()){
+			int option = dialogEcrasmentFichier(fileDataSet); //on demande si on veut l'ecraser
+			requestFocus();
+			if(option == JOptionPane.OK_OPTION){
+				Modele.ecritureDataset(sourceTXT.getText(), fileDataSet.getAbsolutePath());
+				dialogEcritureFichier(fileDataSet);
+			}
+		}
+		else
+			Modele.ecritureDataset(sourceTXT.getText(), fileDataSet.getAbsolutePath());
 	}
 
 	/**
@@ -431,6 +487,10 @@ public class IHMAvisJury extends JFrame{
 		if(!dirStats.exists())
 			dirStats.mkdir();
 
+        dirDataSet = new File(fileSourcePDF.getParent()+"/DataSet");//creation du repertoire d'avis de jury
+        if(!dirDataSet.exists())
+            dirDataSet.mkdir();
+
 		//creation du fichier txt pour les donnees des etudiants
 		String nomFichierTXT = fileSourcePDF.getName().replace(".pdf", ".txt");
 		fileTXT = new File(dirDatasTxt.getAbsolutePath()+"/"+nomFichierTXT);
@@ -449,6 +509,10 @@ public class IHMAvisJury extends JFrame{
 		String nomStats = fileSourcePDF.getName().replace(".pdf", ".csv");
 		fileStats = new File(dirStats.getAbsolutePath()+"/"+nomStats);
 		cibleStat.setText(dirStats.getAbsolutePath()+"/"+nomStats);
+
+        String nomDataSet= fileSourcePDF.getName().replace(".pdf", ".arff");
+        fileDataSet= new File(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
+        cibleData.setText(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
 	}
 
 	/**
@@ -483,7 +547,11 @@ public class IHMAvisJury extends JFrame{
 			if(!dirStats.exists())
 				dirStats.mkdir();
 
-			//creation du fichier txt pour les donnees des etudiants
+            dirDataSet = new File(fileSourcePDF.getParent()+"/DataSet");//creation du repertoire d'avis de jury
+            if(!dirDataSet.exists())
+                dirDataSet.mkdir();
+
+            //creation du fichier txt pour les donnees des etudiants
 			String nomFichierTXT = fileSourcePDF.getName().replace(".pdf", ".txt");
 			fileTXT = new File(dirDatasTxt.getAbsolutePath()+"/"+nomFichierTXT);
 			sourceTXT.setText(fileTXT.getAbsolutePath()); 	
@@ -501,6 +569,11 @@ public class IHMAvisJury extends JFrame{
 			String nomStats = fileSourcePDF.getName().replace(".pdf", ".csv");
 			fileStats = new File(dirStats.getAbsolutePath()+"/"+nomStats);
 			cibleStat.setText(dirStats.getAbsolutePath()+"/"+nomStats);
+
+            //creation du fichier contenant un set de données
+            String nomDataSet= fileSourcePDF.getName().replace(".pdf", ".arff");
+            fileDataSet = new File(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
+            cibleData.setText(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
 		}
 		else{//si la source est pas bonne
 			sourceTXT.setText("fichier inconnu"); 	
@@ -516,6 +589,7 @@ public class IHMAvisJury extends JFrame{
 		conversionPdf_Txt.setEnabled(false);
 		avisJury.setEnabled(false);
 		statistique.setEnabled(false);
+		bData.setEnabled(false);
 	}
 
 	/**
@@ -524,7 +598,8 @@ public class IHMAvisJury extends JFrame{
 	private void unlockButton() {
 		conversionPdf_Txt.setEnabled(true);
 		avisJury.setEnabled(true);
-		statistique.setEnabled(true);	
+		statistique.setEnabled(true);
+        bData.setEnabled(true);
 	}
 
 	/**
@@ -573,4 +648,18 @@ public class IHMAvisJury extends JFrame{
 	private void dialogEcritureFichier(File file) {
 		JOptionPane.showMessageDialog(null, "le fichier " + file.getName() +" a été écrit", "Info", JOptionPane.INFORMATION_MESSAGE);
 	}
+	private JTextField createTextFieldCenter()
+    {
+        JTextField jt=new JTextField();
+        jt.setMaximumSize(new Dimension(this.ScreenWith,this.ScreenHeight/40));
+        return  jt;
+    }
+    private JLabel createLabelCenter(String messageLabel)
+    {
+        JLabel jL=new JLabel(messageLabel);
+        jL.setMaximumSize(new Dimension(150,this.ScreenHeight/40));
+        jL.setPreferredSize(new Dimension(50,10));
+        jL.setHorizontalAlignment(SwingConstants.RIGHT);
+        return jL;
+    }
 }

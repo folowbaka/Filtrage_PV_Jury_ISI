@@ -68,6 +68,9 @@ public abstract class RecherchePattern {
 	 */
 	private static String regexParcours = "ISI|TC|HC|SRT|MASTER";
 
+	private static String regexDecision="Poursuite";
+	private static String regexCommSemestre="Très|Mauvais|Semestre|Assez|Bon|Excellent";
+
 	/**
 	 * recupereNom recherche avec un systeme de regex le nom de l'etudiant dans le fichier
 	 * @param dataEtudiant la liste des donnes dans laquelle chercher le nom
@@ -167,6 +170,18 @@ public abstract class RecherchePattern {
 	public static boolean rechercheFinSemestre(String contenu) {
 		String regex = "Total";
 		if (Pattern.matches(regex, contenu))
+			return true;
+		return false;
+	}
+
+	public static boolean rechercheDecision(String contenu) {
+		if (Pattern.matches(regexDecision, contenu))
+			return true;
+		return false;
+	}
+
+	public static boolean rechercheCommSemestre(String contenu) {
+		if (Pattern.matches(regexCommSemestre, contenu))
 			return true;
 		return false;
 	}

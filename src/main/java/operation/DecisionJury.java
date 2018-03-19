@@ -77,7 +77,7 @@ public abstract class DecisionJury{
 		bw = new BufferedWriter(fw);
 		pw = new PrintWriter(bw);
 
-		List<Etudiant> etudiants = GestionData.listeEtudiant(new File(fichierTexte));
+		List<Etudiant> etudiants = GestionData.listeEtudiant(new File(fichierTexte),false);
 		Iterator<Etudiant> it = etudiants.iterator();
 
 		String entete="";
@@ -126,7 +126,7 @@ public abstract class DecisionJury{
 
 			int nbEtudiantPage = 31;
 			int numPage = 0;
-			List<Etudiant> etudiants = GestionData.listeEtudiant(new File(fichierTexte));
+			List<Etudiant> etudiants = GestionData.listeEtudiant(new File(fichierTexte),false);
 			Iterator<Etudiant> it = etudiants.iterator();
 
 			//Ajout du titre
