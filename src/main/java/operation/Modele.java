@@ -141,7 +141,7 @@ public abstract class Modele {
     {
         try {
 
-            BufferedReader br = new BufferedReader(new FileReader("decision.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("src/main/java/files/decision.txt"));
             String line;
             listeDecision=new HashMap();
             while ((line = br.readLine()) != null) {
