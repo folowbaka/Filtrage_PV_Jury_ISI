@@ -82,8 +82,10 @@ public class GestionData {
 	private static List<Etudiant> creationListeEtudiants(List<String> datas,boolean modele){
 		List<String> dataEtudiant = new ArrayList<String>();
 		List<Etudiant> etudiants = new ArrayList<Etudiant>();
-		if(modele)
-			Modele.loadListeDecision();
+		if(modele) {
+			Modele.loadListeObservation(Modele.getListeDecision(),"src/main/java/files/decision.txt");
+			Modele.loadListeObservation(Modele.getListeCommSemestre(),"src/main/java/files/commSemestre.txt");
+		}
 		Iterator<String> it = datas.iterator();
 		while (it.hasNext()) {//on parcourt les donnees
 			String data = it.next();

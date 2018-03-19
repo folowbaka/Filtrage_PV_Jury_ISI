@@ -1,0 +1,8 @@
+﻿COMS1,Très mauvais semestre
+COMS2,Mauvais semestre
+COMS3,Semestre médiocre
+COMS4,Semestre moyen
+COMS5,Assez bon semestre
+COMS6,Bon semestre
+COMS7,Très bon semestre
+COMS8,Excellent semestre
