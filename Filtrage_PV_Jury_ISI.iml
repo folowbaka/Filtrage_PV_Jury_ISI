@@ -13,7 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="9.0" jdkType="JavaSDK" />
     <orderEntry type="module-library">
       <library name="pdfbox-app-2.0.3.jar">
         <CLASSES>
@@ -24,6 +24,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="pdfbox-app-2.0.3" level="project" />
-    <orderEntry type="library" name="meka-1.9.1-sources" level="project" />
+    <orderEntry type="library" name="meka-1.9.1" level="project" />
+    <orderEntry type="library" name="weka-dev-3.9.0" level="project" />
   </component>
 </module>

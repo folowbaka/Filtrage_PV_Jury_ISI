@@ -54,6 +54,7 @@ public class IHMAvisJury extends JFrame{
 		new JFrame();
 		initialize();
 		addListener();
+
 	}
 
 	/**
