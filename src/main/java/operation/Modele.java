@@ -3,6 +3,7 @@ package main.java.operation;
 import java.io.*;
 import java.util.*;
 
+import weka.core.*;
 
 public abstract class Modele {
     private  static Map<String,String> listeDecision;
@@ -32,10 +33,10 @@ public abstract class Modele {
 
         List<data.Etudiant> etudiants = operation.GestionData.listeEtudiant(new File(nomFichierTexte),true);
         Iterator<data.Etudiant> it = etudiants.iterator();
-        FastVector      atts;
-        FastVector      attsRel;
-        FastVector      attVals;
-        FastVector      attValsRel;
+        ArrayList<Attribute>     atts;
+        ArrayList<Attribute>      attsRel;
+        ArrayList<String>      attVals;
+        ArrayList<String>      attValsRel;
         Instances       data;
         Instances       dataRel;
         double[]        vals;
@@ -43,29 +44,29 @@ public abstract class Modele {
         int             i;
 
         // 1. set up attributes
-        atts = new FastVector();
+        atts = new ArrayList<Attribute>();
         // - numeric
-        atts.addElement(new Attribute("att1"));
+        atts.add(new Attribute("att1"));
         // - nominal
-        attVals = new FastVector();
+        attVals = new ArrayList<String>();
         for (i = 0; i < 5; i++)
-            attVals.addElement("val" + (i+1));
-        atts.addElement(new Attribute("att2", attVals));
+            attVals.add("val" + (i+1));
+        atts.add(new Attribute("att2", attVals));
         // - string
-        atts.addElement(new Attribute("att3", (FastVector) null));
+        atts.add(new Attribute("att3", (FastVector) null));
         // - date
-        atts.addElement(new Attribute("att4", "yyyy-MM-dd"));
+        atts.add(new Attribute("att4", "yyyy-MM-dd"));
         // - relational
-        attsRel = new FastVector();
+        attsRel =  new ArrayList<Attribute>();
         // -- numeric
-        attsRel.addElement(new Attribute("att5.1"));
+        attsRel.add(new Attribute("att5.1"));
         // -- nominal
-        attValsRel = new FastVector();
+        attValsRel = new ArrayList<String>();
         for (i = 0; i < 5; i++)
-            attValsRel.addElement("val5." + (i+1));
-        attsRel.addElement(new Attribute("att5.2", attValsRel));
+            attValsRel.add("val5." + (i+1));
+        attsRel.add(new Attribute("att5.2", attValsRel));
         dataRel = new Instances("att5", attsRel, 0);
-        atts.addElement(new Attribute("att5", dataRel, 0));
+        atts.add(new Attribute("att5", dataRel, 0));
 
         // 2. create Instances object
         data = new Instances("MyRelation", atts, 0);
@@ -80,22 +81,26 @@ public abstract class Modele {
         // - string
         vals[2] = data.attribute(2).addStringValue("This is a string!");
         // - date
-        vals[3] = data.attribute(3).parseDate("2001-11-09");
+        try {
+            vals[3] = data.attribute(3).parseDate("2001-11-09");
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
         // - relational
         dataRel = new Instances(data.attribute(4).relation(), 0);
         // -- first instance
         valsRel = new double[2];
         valsRel[0] = Math.PI + 1;
         valsRel[1] = attValsRel.indexOf("val5.3");
-        dataRel.add(new Instance(1.0, valsRel));
+        dataRel.add(new DenseInstance(1.0, valsRel));
         // -- second instance
         valsRel = new double[2];
         valsRel[0] = Math.PI + 2;
         valsRel[1] = attValsRel.indexOf("val5.2");
-        dataRel.add(new Instance(1.0, valsRel));
+        dataRel.add(new DenseInstance(1.0, valsRel));
         vals[4] = data.attribute(4).addRelation(dataRel);
         // add
-        data.add(new Instance(1.0, vals));
+        data.add(new DenseInstance(1.0, vals));
 
         // second instance
         vals = new double[data.numAttributes()];  // important: needs NEW array!
@@ -106,22 +111,26 @@ public abstract class Modele {
         // - string
         vals[2] = data.attribute(2).addStringValue("And another one!");
         // - date
-        vals[3] = data.attribute(3).parseDate("2000-12-01");
+        try {
+            vals[3] = data.attribute(3).parseDate("2000-12-01");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         // - relational
         dataRel = new Instances(data.attribute(4).relation(), 0);
         // -- first instance
         valsRel = new double[2];
         valsRel[0] = Math.E + 1;
         valsRel[1] = attValsRel.indexOf("val5.4");
-        dataRel.add(new Instance(1.0, valsRel));
+        dataRel.add(new DenseInstance(1.0, valsRel));
         // -- second instance
         valsRel = new double[2];
         valsRel[0] = Math.E + 2;
         valsRel[1] = attValsRel.indexOf("val5.1");
-        dataRel.add(new Instance(1.0, valsRel));
+        dataRel.add(new DenseInstance(1.0, valsRel));
         vals[4] = data.attribute(4).addRelation(dataRel);
         // add
-        data.add(new Instance(1.0, vals));
+        data.add(new DenseInstance(1.0, vals));
 
         // 4. output data
         System.out.println(data);
