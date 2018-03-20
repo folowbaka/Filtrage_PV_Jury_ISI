@@ -1,4 +1,4 @@
-package operation;
+package main.java.operation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import data.Etudiant;
-import data.Module;
-import data.Note;
+import main.java.data.Etudiant;
+import main.java.data.Module;
+import main.java.data.Note;
 import main.java.data.Observation;
 import main.java.operation.Modele;
 
@@ -89,13 +89,13 @@ public class GestionData {
 		Iterator<String> it = datas.iterator();
 		while (it.hasNext()) {//on parcourt les donnees
 			String data = it.next();
-			if(operation.RecherchePattern.rechercheDebutEtudiant(data)){	//si on change d'etudiant on reset les donnees concernant l'ancien etudiant
+			if(RecherchePattern.rechercheDebutEtudiant(data)){	//si on change d'etudiant on reset les donnees concernant l'ancien etudiant
 				reset();
 				dataEtudiant = new ArrayList<String>();//on reset les donnees
 				setNbEtudiant(getNbEtudiant() + 1);
 			}
 			else{//si on a pas changer d'etudiant on stocke ces donnees
-				if(operation.RecherchePattern.rechercheFinEtudiant(data)){//si on est a la fin des donnees on creer l'etudiant
+				if(RecherchePattern.rechercheFinEtudiant(data)){//si on est a la fin des donnees on creer l'etudiant
 					dataEtudiant.add(data); //on ajoute le dernier element au donnee
 					if(!modele)
 						etudiants.add(ajoutEtudiant(dataEtudiant));
@@ -130,15 +130,15 @@ public class GestionData {
 		Observation observation=null;
 		while (it.hasNext()) {//on parcourt les donnees
 			String data = it.next();
-			if(operation.RecherchePattern.rechercheDebutSemestre(data)){	//pour le premier semestre
+			if(RecherchePattern.rechercheDebutSemestre(data)){	//pour le premier semestre
 				observation=new Observation();
 				enSemestre = true;
 			}
 			if(enSemestre){//si on est dans la zone de semestres
-				if(operation.RecherchePattern.rechercheFinSemestre(data)){//si on est a la fin du semestre
+				if(RecherchePattern.rechercheFinSemestre(data)){//si on est a la fin du semestre
 					enSemestre=false;
 				}
-				else if(operation.RecherchePattern.rechercheDecision(data)){//si on est dans la zone semestre
+				else if(RecherchePattern.rechercheDecision(data)){//si on est dans la zone semestre
 					if(data.equals("Poursuite"))
 					{
 						data=it.next();
@@ -154,7 +154,7 @@ public class GestionData {
 						}
 					}
 				}
-				else if(operation.RecherchePattern.rechercheCommSemestre(data))
+				else if(RecherchePattern.rechercheCommSemestre(data))
 				{
 					switch(data)
 					{
@@ -192,7 +192,7 @@ public class GestionData {
 		return observation;
 	}
 	private static Etudiant ajoutEtudiant(List<String> dataEtudiant){
-		String nom = operation.RecherchePattern.recupereNom(dataEtudiant);//on recupere le nom
+		String nom = RecherchePattern.recupereNom(dataEtudiant);//on recupere le nom
 		String prenom = RecherchePattern.recuperePrenom(dataEtudiant);// on recupere le prenom
 		// JM pour test
 //		if (nom.equals("TROIS"))
@@ -220,7 +220,7 @@ public class GestionData {
 				enSemestre = true;
 			}
 			if(enSemestre){//si on est dans la zone de semestres
-				if(operation.RecherchePattern.rechercheFinSemestre(data)){//si on est a la fin du semestre
+				if(RecherchePattern.rechercheFinSemestre(data)){//si on est a la fin du semestre
 					nbSemestres++; //on ajute un semestre a l'etudiant
 					modules.addAll(creationModulesSemestre(dataSemestreEtudiant));
 					dataSemestreEtudiant = new ArrayList<String>();// on reset les donnees
@@ -258,7 +258,7 @@ public class GestionData {
 			if ((str.length()>1)&&(RecherchePattern.recupereNomModule2(str) != null)){//des qu'on a le premier module 
 				nomModule=RecherchePattern.recupereNomModule2(str);//on recupere le nom du module
 				categorie=RecherchePattern.recupereCategorie(nomModule);// la categorie
-				credit=operation.RecherchePattern.recupereCredit(str); //le nombre de credit
+				credit=RecherchePattern.recupereCredit(str); //le nombre de credit
 			}
 
 			if(RecherchePattern.recupereNote(str) != null){

@@ -1,4 +1,4 @@
-package data;
+package main.java.data;
 /**
  * Note represente la note possible pour une UV
  */

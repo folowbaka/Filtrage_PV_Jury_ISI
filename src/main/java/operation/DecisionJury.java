@@ -1,4 +1,4 @@
-package operation;
+package main.java.operation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,11 +16,10 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import java.io.PrintWriter;
 
-import data.Etudiant;
-import data.Module;
-import data.Note;
-import io.LectureModules;
-
+import main.java.data.Etudiant;
+import main.java.data.Module;
+import main.java.data.Note;
+import main.java.io.LectureModules;
 /**
  * Classe qui gere les decisions de jury des etudiants 
  */

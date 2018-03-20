@@ -1,12 +1,12 @@
-package operation;
+package main.java.operation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
-import data.Module;
-import data.Note;
-import io.LectureModules;
+import main.java.data.Module;
+import main.java.data.Note;
+import main.java.io.LectureModules;
 
 /**
  * RecherchePattern traite les pattern dans les fichiers texte pour recuperer des donnees senesible

@@ -11,10 +11,10 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
-import data.Etudiant;
-import ihm.IHMAvisJury;
-import io.LectureModules;
-import operation.GestionData;
+import main.java.data.Etudiant;
+import main.java.ihm.IHMAvisJury;
+import main.java.io.LectureModules;
+import main.java.operation.GestionData;
 
 /**
  * Point d'entree du programme

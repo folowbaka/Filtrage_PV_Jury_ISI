@@ -1,5 +1,5 @@
 
-package io;
+package main.java.io;
 
 import java.io.BufferedReader;
 
@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import data.Module;
+import main.java.data.Module;
 
 
 /**

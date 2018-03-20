@@ -1,4 +1,4 @@
-package operation;
+package main.java.operation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import data.Etudiant;
-import data.Module;
-import data.Note;
+import main.java.data.Etudiant;
+import main.java.data.Module;
+import main.java.data.Note;
 
 
 /**

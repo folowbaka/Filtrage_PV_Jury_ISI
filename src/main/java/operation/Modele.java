@@ -2,6 +2,8 @@ package main.java.operation;
 import java.io.*;
 import java.util.*;
 
+import main.java.data.Etudiant;
+import main.java.data.Module;
 import meka.filters.unsupervised.attribute.MekaClassAttributes;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.*;
@@ -12,6 +14,7 @@ import weka.core.converters.ConverterUtils.DataSink;
 public abstract class Modele {
     private static Map<String,String> listeDecision=new LinkedHashMap<String, String>();
     private static Map<String,String> listeCommSemestre=new LinkedHashMap<String, String>();
+    private static ArrayList<String> keyLabel=new ArrayList<String>();
     public static Map<String, String> getListeDecision() {
         return listeDecision;
     }
@@ -43,13 +46,12 @@ public abstract class Modele {
         bw = new BufferedWriter(fw);
         pw = new PrintWriter(bw);
 
-        List<data.Etudiant> etudiants = operation.GestionData.listeEtudiant(new File(nomFichierTexte),true);
-        Iterator<data.Etudiant> it = etudiants.iterator();
+        List<Etudiant> etudiants = GestionData.listeEtudiant(new File(nomFichierTexte),true);
+        Iterator<Etudiant> it = etudiants.iterator();
         ArrayList<Attribute>     atts;
         ArrayList<String>      binaryVal;
         Instances       data;
         double[]        vals;
-        data.Etudiant etu=it.next();
 
         // 1. set up attributes
         atts = new ArrayList<Attribute>();
@@ -61,21 +63,49 @@ public abstract class Modele {
         for(Map.Entry decision:listeDecision.entrySet())
         {
             atts.add(new Attribute((String)decision.getKey(),binaryVal));
+            keyLabel.add((String)decision.getKey());
         }
         for(Map.Entry commSemestre:listeCommSemestre.entrySet())
         {
             atts.add(new Attribute((String)commSemestre.getKey(),binaryVal));
+            keyLabel.add((String)commSemestre.getKey());
         }
         // - numeric
         atts.add(new Attribute("scoreSemestre"));
+        atts.add(new Attribute("nombreUe"));
+        atts.add(new Attribute("nombreUeRatees"));
         // 2. create Instances object
         data = new Instances("AvisJury: -C "+nbLabel, atts, 0);
 
         // 3. fill with data
-        // first instance
-        vals = new double[data.numAttributes()];
-        // - numeric
-        data.add(new DenseInstance(1.0, vals));
+        while(it.hasNext())
+        {
+            Etudiant etu=it.next();
+                int semestre=etu.getModules().get(etu.getModules().size()-1).getSemestre();
+                vals = new double[data.numAttributes()];
+                int indexDecision = keyLabel.indexOf(etu.getObservation().getDecision());
+                // - numeric
+                if(indexDecision>-1)
+                    vals[indexDecision] = 1;
+                int indexCommSemestre = keyLabel.indexOf(etu.getObservation().getCommSemestre());
+                if(indexCommSemestre>-1)
+                    vals[indexCommSemestre] = 1;
+                int nbModule=etu.getModules().size();
+                int nbUERatees=0;
+                for(int i=0;i<nbModule;i++)
+                {
+                    if(etu.getModules().get(i).getSemestre()==semestre)
+                    {
+                        if (DecisionJury.estRatee(etu.getModules().get(i)))
+                            nbUERatees++;
+                    }
+                }
+                vals[nbLabel]=DecisionJury.evalueSemestre(etu,semestre);
+                vals[nbLabel+1]=DecisionJury.nombreUeSemestre(etu,semestre);
+                vals[nbLabel+2]=nbUERatees;
+                data.add(new DenseInstance(1.0, vals));
+
+        }
         pw.print(data);
         pw.close();
     }

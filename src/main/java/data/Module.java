@@ -1,4 +1,4 @@
-package data;
+package main.java.data;
 
 /**
  * La classe module représente un module de l'UTT

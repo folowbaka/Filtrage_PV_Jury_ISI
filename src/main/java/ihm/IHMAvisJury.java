@@ -1,4 +1,4 @@
-package ihm;
+package main.java.ihm;
 
 import javax.swing.*;
 
@@ -11,9 +11,9 @@ import main.java.operation.Modele;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import io.SauvegardeRepertoire;
-import operation.DecisionJury;
-import operation.Statistiques;
+import main.java.io.SauvegardeRepertoire;
+import main.java.operation.DecisionJury;
+import main.java.operation.Statistiques;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

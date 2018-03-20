@@ -1,4 +1,4 @@
-package data;
+package main.java.data;
 
 import main.java.data.Observation;
 
@@ -176,5 +176,9 @@ public class Etudiant {
 			}
 		}
 		return chaine;
+	}
+
+	public Observation getObservation() {
+		return observation;
 	}
 }
