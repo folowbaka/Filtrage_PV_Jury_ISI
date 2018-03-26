@@ -38,14 +38,17 @@ public class IHMAvisJury extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 
-	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat,cibleData;
+	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat,cibleData,cibleTrainingData;
 	private JPanel jPanelCenter;
 	private JLabel message;
 	private File fileTXT, fileSourcePDF, fileDestPDF, fileDecisionJury, fileStats,fileDataSet;
 	private File dirAvisJury, dirStats, dirDatasTxt, dirAvisJuryCSV, dirAvisJuryPDF,dirDataSet;
-	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique,bData;
+	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique,bData,findDataSet,bDataTraining;
 	private int ScreenWith;
 	private int ScreenHeight;
+	public final static int PDFFile = 1;
+	public final static int ARFFFile = 2;
+
 
 	/**
 	 * Creation de l'application.
@@ -193,6 +196,31 @@ public class IHMAvisJury extends JFrame{
         this.jPanelCenter.add(jPanelBData);
         this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 
+		JPanel jPanelTrainingData=new JPanel();
+		jPanelTrainingData.setLayout(new BoxLayout(jPanelTrainingData,BoxLayout.LINE_AXIS));
+		JLabel lblTrainingData=this.createLabelCenter("Source Dataset");
+		jPanelTrainingData.add(lblTrainingData);
+		jPanelTrainingData.add(Box.createRigidArea(new Dimension(20,0)));
+		cibleTrainingData = this.createTextFieldCenter();
+		jPanelTrainingData.add(cibleTrainingData);
+		jPanelTrainingData.add(Box.createRigidArea(new Dimension(5,0)));
+		// Bouton pour le chargement du fichier PDF
+		findDataSet = new JButton("...");
+		findDataSet.setFont(new Font("Tahoma", Font.BOLD, 11));
+		findDataSet.setMaximumSize(new Dimension(50,35));
+		jPanelTrainingData.add(findDataSet);
+		this.jPanelCenter.add(jPanelTrainingData);
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
+
+		JPanel jPanelBDataTraining=new JPanel();
+		jPanelBDataTraining.setLayout(new BoxLayout(jPanelBDataTraining,BoxLayout.LINE_AXIS));
+		bDataTraining = new JButton("Entrainer le modèle");
+		jPanelBDataTraining.add(Box.createHorizontalGlue());
+		jPanelBDataTraining.add(bDataTraining);
+		jPanelBDataTraining.add(Box.createHorizontalGlue());
+		this.jPanelCenter.add(jPanelBDataTraining);
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
+
         JPanel jPanelFootCenter=new JPanel();
         jPanelFootCenter.setLayout(new BoxLayout(jPanelFootCenter,BoxLayout.LINE_AXIS));
         message = new JLabel("");
@@ -227,7 +255,7 @@ public class IHMAvisJury extends JFrame{
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_R:
 					if(findPDF.isEnabled())
-						choixRepertoire();
+						choixRepertoire(PDFFile);
 					break;
 				case KeyEvent.VK_C:
 					if(conversionPdf_Txt.isEnabled())
@@ -269,7 +297,14 @@ public class IHMAvisJury extends JFrame{
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if(findPDF.isEnabled())
-					choixRepertoire();
+					choixRepertoire(PDFFile);
+			}
+		});
+		findDataSet.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(findDataSet.isEnabled())
+					choixRepertoire(ARFFFile);
 			}
 		});
 
@@ -421,7 +456,7 @@ public class IHMAvisJury extends JFrame{
 	/**
 	 * choixRepertoire permet de definir le repertoire le plus adequat pour le JFileChooser
 	 */
-	private void choixRepertoire(){
+	private void choixRepertoire(int format){
 		String path = ""; //Chemin a parcourir
 		JFileChooser chooser = null;
 		if(SauvegardeRepertoire.getPaths().isEmpty()){//Si la liste des repertoires est vide
@@ -442,15 +477,32 @@ public class IHMAvisJury extends JFrame{
 			else
 				chooser = new JFileChooser(path);
 		}
+		FileNameExtensionFilter filter=null;
+		switch(format)
+		{
+			case PDFFile:
+				filter = new FileNameExtensionFilter("PDF","pdf");
+				break;
+			case ARFFFile:
+				filter = new FileNameExtensionFilter("ARFF","arff");
+				break;
+		}
 
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF","pdf");
 		chooser.setFileFilter(filter);
 		chooser.setMultiSelectionEnabled(false);
 		int returnVal = chooser.showOpenDialog(null);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			SauvegardeRepertoire.ajoutPath(chooser);//permet de sauvegarder les repertoires
-			gestionFichier(chooser);
-			unlockButton();
+			if(filter.getExtensions()[0].equals("pdf")) {
+				gestionFichier(chooser);
+				unlockButton();
+			}
+			else
+			{
+				gestionFichierDataSet(chooser);
+				bDataTraining.setEnabled(true);
+			}
+
 		}
 	}
 
@@ -516,6 +568,11 @@ public class IHMAvisJury extends JFrame{
         cibleData.setText(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
 	}
 
+	private void gestionFichierDataSet(JFileChooser chooser)
+	{
+		fileDataSet= new File(chooser.getSelectedFile().getAbsolutePath());
+		cibleTrainingData.setText(fileDataSet.getAbsolutePath());
+	}
 	/**
 	 * Méthode qui gere les saisie au clavier pour les fichiers
 	 */
@@ -591,6 +648,7 @@ public class IHMAvisJury extends JFrame{
 		avisJury.setEnabled(false);
 		statistique.setEnabled(false);
 		bData.setEnabled(false);
+		bDataTraining.setEnabled(false);
 	}
 
 	/**

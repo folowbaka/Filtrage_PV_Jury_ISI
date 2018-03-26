@@ -357,8 +357,12 @@ public class GestionData {
 		List<Etudiant> listEtu = new ArrayList<Etudiant>();
 		for (int i=0; i<etudiants.size(); i++) {
 			Etudiant etudiant = etudiants.get(i);
-			if (!listEtu.contains(etudiant))
-				listEtu.add(etudiant);
+			if(i==469)
+				System.out.println("WALID");
+			if(etudiant.getNom()!=null) {
+				if (!listEtu.contains(etudiant))
+					listEtu.add(etudiant);
+			}
 		}
 		return listEtu;
 	}
