@@ -1,9 +1,15 @@
 package main.java.operation;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import main.java.data.Etudiant;
 import main.java.data.Module;
+import meka.classifiers.multilabel.BCC;
+import meka.classifiers.multilabel.BR;
+import meka.classifiers.multilabel.Evaluation;
+import meka.core.MLUtils;
+import meka.core.Result;
 import meka.filters.unsupervised.attribute.MekaClassAttributes;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.*;
@@ -133,8 +139,52 @@ public abstract class Modele {
 
     }
 
+    public static BCC entrainement(File fileDataset)
+    {
+        System.out.println("Loading data: " + fileDataset.getName());
+        Instances data=null;
+        try {
+            data = DataSource.read(fileDataset.getAbsolutePath());
+            MLUtils.prepareData(data);
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        double percentage = Double.parseDouble("50");
+        int trainSize = (int) (data.numInstances() * percentage / 100.0);
+        Instances train = new Instances(data, 0, trainSize);
+        Instances test = new Instances(data, trainSize, data.numInstances() - trainSize);
+
+        System.out.println("Build BR classifier on " + percentage + "%");
+        BCC classifier = new BCC();
+        // further configuration of classifier
+        try
+        {
+            classifier.buildClassifier(train);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        System.out.println("Evaluate BR classifier on " + (100.0 - percentage) + "%");
+        String top = "PCut1";
+        String vop = "3";
+        Result result=null;
+        try
+        {
+            result = Evaluation.evaluateModel(classifier, train, test, top, vop);
+            System.out.println(result);
+
+        }catch (Exception e)
+        {
+
+        }
+        return classifier;
+    }
     public static Map<String, String> getListeCommSemestre() {
         return listeCommSemestre;
     }
+
 
 }

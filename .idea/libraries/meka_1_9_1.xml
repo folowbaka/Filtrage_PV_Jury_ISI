@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="pdfbox-app-2.0.3">
+  <library name="meka-1.9.1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/pdfbox-app-2.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/meka-1.9.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

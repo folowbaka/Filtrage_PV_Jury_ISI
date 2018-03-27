@@ -8,12 +8,19 @@ import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import main.java.operation.Modele;
+import meka.classifiers.multilabel.BCC;
+import meka.classifiers.multilabel.BR;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import main.java.io.SauvegardeRepertoire;
 import main.java.operation.DecisionJury;
 import main.java.operation.Statistiques;
+import weka.classifiers.trees.J48;
+import weka.gui.treevisualizer.Node;
+import weka.gui.treevisualizer.NodePlace;
+import weka.gui.treevisualizer.PlaceNode2;
+import weka.gui.treevisualizer.TreeVisualizer;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -26,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * GestionStagesJuryIsi crée une fenétre graphique pour sélectionner le pv de jury ISI au format PDF
@@ -346,6 +354,31 @@ public class IHMAvisJury extends JFrame{
 						genererDataSet();
 					else
 						message.setText("<html><span color='red'>la conversion du .pdf en .txt n'a pas été faite</span></html>");
+			}
+		});
+		bDataTraining.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(bDataTraining.isEnabled())
+					if(fileDataSet.exists())
+					{
+						BCC cls = Modele.entrainement(fileDataSet);
+						String bite=null;
+						try {
+							bite=cls.graph().toString();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+						try {
+							TreeVisualizer tv = new TreeVisualizer(null,
+									cls.graph().get(0),
+									new PlaceNode2());
+							jPanelCenter.add(tv);
+						}catch (Exception ex)
+						{
+							ex.printStackTrace();
+						}
+					}
 			}
 		});
 

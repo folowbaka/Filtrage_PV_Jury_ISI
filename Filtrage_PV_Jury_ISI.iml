@@ -14,17 +14,10 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
-    <orderEntry type="module-library">
-      <library name="pdfbox-app-2.0.3.jar">
-        <CLASSES>
-          <root url="file://C:/Program Files/Java/PdfBox/pdfbox-app-2.0.3.jar" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="pdfbox-app-2.0.3" level="project" />
     <orderEntry type="library" name="meka-1.9.1" level="project" />
     <orderEntry type="library" name="weka-dev-3.9.0" level="project" />
+    <orderEntry type="library" name="bounce-0.18" level="project" />
+    <orderEntry type="library" name="mst-4.0" level="project" />
   </component>
 </module>
