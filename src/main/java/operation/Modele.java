@@ -20,7 +20,13 @@ import weka.core.converters.ConverterUtils.DataSink;
 public class Modele {
     private static Map<String,String> listeDecision=new LinkedHashMap<String, String>();
     private static Map<String,String> listeCommSemestre=new LinkedHashMap<String, String>();
+    private static Map<String,String> listeCommComplementaire=new LinkedHashMap<>();
     private static ArrayList<String> keyLabel=new ArrayList<String>();
+
+    public static Map<String, String> getListeCommComplementaire() {
+        return listeCommComplementaire;
+    }
+
     public static Map<String, String> getListeDecision() {
         return listeDecision;
     }
@@ -31,6 +37,7 @@ public class Modele {
     {
         Modele.loadListeObservation(Modele.getListeDecision(),"src/main/java/files/decision.txt");
         Modele.loadListeObservation(Modele.getListeCommSemestre(),"src/main/java/files/commSemestre.txt");
+        Modele.loadListeObservation(Modele.getListeCommComplementaire(),"src/main/java/files/commComplementaire.txt");
         for(Map.Entry decision:listeDecision.entrySet())
         {
             keyLabel.add((String)decision.getKey());
@@ -38,6 +45,10 @@ public class Modele {
         for(Map.Entry commSemestre:listeCommSemestre.entrySet())
         {
             keyLabel.add((String)commSemestre.getKey());
+        }
+        for(Map.Entry commComplementaire:listeCommComplementaire.entrySet())
+        {
+            keyLabel.add((String)commComplementaire.getKey());
         }
     }
     public static void setListeDecision(Map<String,String> listeDecision) {
@@ -108,6 +119,12 @@ public class Modele {
                 int indexCommSemestre = keyLabel.indexOf(etu.getObservation().getCommSemestre());
                 if(indexCommSemestre>-1)
                     vals[indexCommSemestre] = 1;
+                int nbCC=etu.getObservation().getCommComplementaire().size();
+                for(int i=0;i<nbCC;i++)
+                {
+                    int indexCommComplementaire=keyLabel.indexOf(etu.getObservation().getCommComplementaire().get(i));
+                    vals[indexCommComplementaire]=1;
+                }
                 int nbModule=etu.getModules().size();
                 int nbUERatees=0;
                 for(int i=0;i<nbModule;i++)

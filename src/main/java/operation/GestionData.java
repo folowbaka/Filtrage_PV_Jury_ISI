@@ -195,7 +195,7 @@ public class GestionData {
 								if(data.equals("NPML"))
 								{
 									data=it.next();
-									if(data.equals("Anglais"))
+									if(data.equals("Anglais,"))
 										observation.getCommComplementaire().add("CC1");
 								}
 							}
