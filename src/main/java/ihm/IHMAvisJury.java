@@ -17,10 +17,7 @@ import main.java.io.SauvegardeRepertoire;
 import main.java.operation.DecisionJury;
 import main.java.operation.Statistiques;
 import weka.classifiers.trees.J48;
-import weka.gui.treevisualizer.Node;
-import weka.gui.treevisualizer.NodePlace;
-import weka.gui.treevisualizer.PlaceNode2;
-import weka.gui.treevisualizer.TreeVisualizer;
+import weka.gui.treevisualizer.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -34,6 +31,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+
+import static java.lang.Thread.sleep;
 
 /**
  * GestionStagesJuryIsi crée une fenétre graphique pour sélectionner le pv de jury ISI au format PDF
@@ -49,11 +48,14 @@ public class IHMAvisJury extends JFrame{
 	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat,cibleData,cibleTrainingData;
 	private JPanel jPanelCenter;
 	private JLabel message;
+	private JTabbedPane[] panelGraph;
 	private File fileTXT, fileSourcePDF, fileDestPDF, fileDecisionJury, fileStats,fileDataSet;
 	private File dirAvisJury, dirStats, dirDatasTxt, dirAvisJuryCSV, dirAvisJuryPDF,dirDataSet;
-	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique,bData,findDataSet,bDataTraining;
-	private int ScreenWith;
-	private int ScreenHeight;
+	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique,bData,findDataSet,bDataTraining,bCompare;
+	private int screenWidth;
+	private int screenHeight;
+	private IHMAvisJury window=this;
+	private Modele mo;
 	public final static int PDFFile = 1;
 	public final static int ARFFFile = 2;
 
@@ -65,7 +67,7 @@ public class IHMAvisJury extends JFrame{
 		new JFrame();
 		initialize();
 		addListener();
-
+        this.mo=new Modele();
 	}
 
 	/**
@@ -96,13 +98,14 @@ public class IHMAvisJury extends JFrame{
 		this.setVisible(true);
 		this.setTitle("Gestion Stages Jury ISI");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.ScreenWith=screenSize.width;
-        this.ScreenHeight=screenSize.height;
-		this.setBounds(this.ScreenWith/2-(this.ScreenWith/2)/2,this.ScreenHeight/2-(this.ScreenHeight/2)/2,1000,500);
+        this.screenWidth=screenSize.width;
+        this.screenHeight=screenSize.height;
+		this.setBounds(this.screenWidth/2-(this.screenWidth/2)/2,this.screenHeight/2-500,800,950);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setLayout(new BorderLayout());
 		this.jPanelCenter=new JPanel();
 		this.jPanelCenter.setLayout(new BoxLayout(this.jPanelCenter,BoxLayout.PAGE_AXIS));
+		this.panelGraph=new JTabbedPane[2];
 		JPanel jPanelPDF=new JPanel();
         jPanelPDF.setLayout(new BoxLayout(jPanelPDF,BoxLayout.LINE_AXIS));
 
@@ -223,24 +226,35 @@ public class IHMAvisJury extends JFrame{
 		JPanel jPanelBDataTraining=new JPanel();
 		jPanelBDataTraining.setLayout(new BoxLayout(jPanelBDataTraining,BoxLayout.LINE_AXIS));
 		bDataTraining = new JButton("Entrainer le modèle");
-		jPanelBDataTraining.add(Box.createHorizontalGlue());
 		jPanelBDataTraining.add(bDataTraining);
+        bCompare = new JButton("Comparer");
 		jPanelBDataTraining.add(Box.createHorizontalGlue());
+        jPanelBDataTraining.add(bCompare);
 		this.jPanelCenter.add(jPanelBDataTraining);
 		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
-
-        JPanel jPanelFootCenter=new JPanel();
-        jPanelFootCenter.setLayout(new BoxLayout(jPanelFootCenter,BoxLayout.LINE_AXIS));
+		JPanel training=new JPanel();
+        training.setLayout(new BoxLayout(training,BoxLayout.LINE_AXIS));
+		this.panelGraph[0]=new JTabbedPane();
+		this.panelGraph[1]=new JTabbedPane();
+		this.panelGraph[0].setMinimumSize(new Dimension(800,600));
+        this.panelGraph[1].setMinimumSize(new Dimension(800,600));
+        training.add(panelGraph[0]);
+        training.add(panelGraph[1]);
+        panelGraph[1].setVisible(false);
+		this.jPanelCenter.add(training);
+        JPanel jPanelFoot=new JPanel();
+        jPanelFoot.setLayout(new BoxLayout(jPanelFoot,BoxLayout.LINE_AXIS));
         message = new JLabel("");
-        jPanelFootCenter.add(message);
-        jPanelFootCenter.add(Box.createHorizontalGlue());
+        jPanelFoot.add(message);
+        jPanelFoot.add(Box.createHorizontalGlue());
         exit = new JButton("Quitter");
-        jPanelFootCenter.add(exit);
-        this.jPanelCenter.add(jPanelFootCenter);
-		this.jPanelCenter.add(Box.createRigidArea(new Dimension(5,5)));
+        jPanelFoot.add(exit);
+		jPanelFoot.add(Box.createRigidArea(new Dimension(10,40)));
+		this.jPanelCenter.add(Box.createRigidArea(new Dimension(5,(5))));
         // Bouton pour quitter l'application
 		this.jPanelCenter.setBorder(new EmptyBorder(10,10,10,10));
         this.getContentPane().add(this.jPanelCenter,BorderLayout.CENTER);
+        this.getContentPane().add(jPanelFoot,BorderLayout.SOUTH);
         lockButton();
 	}
 
@@ -356,6 +370,31 @@ public class IHMAvisJury extends JFrame{
 						message.setText("<html><span color='red'>la conversion du .pdf en .txt n'a pas été faite</span></html>");
 			}
 		});
+        bCompare.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!panelGraph[1].isVisible()) {
+                    panelGraph[1].setVisible(true);
+                    window.setBounds(screenWidth / 3 - (screenWidth / 2) / 2, screenHeight / 2 - 500, 1300, 950);
+                }
+                if(fileDataSet.exists())
+                {
+                    BCC cls = Modele.entrainement(fileDataSet);
+                    try {
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    try {
+                        drawGraph(1,cls);
+                    }catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+
+            }
+        });
+
 		bDataTraining.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -363,21 +402,18 @@ public class IHMAvisJury extends JFrame{
 					if(fileDataSet.exists())
 					{
 						BCC cls = Modele.entrainement(fileDataSet);
-						String bite=null;
 						try {
-							bite=cls.graph().toString();
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
 						try {
-							TreeVisualizer tv = new TreeVisualizer(null,
-									cls.graph().get(0),
-									new PlaceNode2());
-							jPanelCenter.add(tv);
+						    drawGraph(0,cls);
+							bCompare.setEnabled(true);
 						}catch (Exception ex)
 						{
 							ex.printStackTrace();
 						}
+                        ((TreeVisualizer)panelGraph[0].getComponentAt(0)).fitToScreen();
 					}
 			}
 		});
@@ -682,6 +718,7 @@ public class IHMAvisJury extends JFrame{
 		statistique.setEnabled(false);
 		bData.setEnabled(false);
 		bDataTraining.setEnabled(false);
+		bCompare.setEnabled(false);
 	}
 
 	/**
@@ -743,15 +780,28 @@ public class IHMAvisJury extends JFrame{
 	private JTextField createTextFieldCenter()
     {
         JTextField jt=new JTextField();
-        jt.setMaximumSize(new Dimension(this.ScreenWith,this.ScreenHeight/40));
+        jt.setMaximumSize(new Dimension(this.screenWidth,this.screenHeight/40));
         return  jt;
     }
     private JLabel createLabelCenter(String messageLabel)
     {
         JLabel jL=new JLabel(messageLabel);
-        jL.setMaximumSize(new Dimension(150,this.ScreenHeight/40));
+        jL.setMaximumSize(new Dimension(150,this.screenHeight/40));
         jL.setPreferredSize(new Dimension(50,10));
         jL.setHorizontalAlignment(SwingConstants.RIGHT);
         return jL;
+    }
+    private void drawGraph(int numPanelGraph,BCC cls) throws Exception
+    {
+        int nbTree=Modele.getKeyLabel().size();
+        panelGraph[numPanelGraph].removeAll();
+        for(int i=0;i<nbTree;i++)
+        {
+            TreeVisualizer tv = new TreeVisualizer(null,
+                    cls.graph().get(i),
+                    new PlaceNode2());
+            panelGraph[numPanelGraph].add(Modele.getKeyLabel().get(i),tv);
+        }
+
     }
 }

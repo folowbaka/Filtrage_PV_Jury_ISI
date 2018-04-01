@@ -82,10 +82,6 @@ public class GestionData {
 	private static List<Etudiant> creationListeEtudiants(List<String> datas,boolean modele){
 		List<String> dataEtudiant = new ArrayList<String>();
 		List<Etudiant> etudiants = new ArrayList<Etudiant>();
-		if(modele) {
-			Modele.loadListeObservation(Modele.getListeDecision(),"src/main/java/files/decision.txt");
-			Modele.loadListeObservation(Modele.getListeCommSemestre(),"src/main/java/files/commSemestre.txt");
-		}
 		Iterator<String> it = datas.iterator();
 		while (it.hasNext()) {//on parcourt les donnees
 			String data = it.next();
@@ -183,6 +179,26 @@ public class GestionData {
 							break;
 						case "Excellent":
 							observation.setCommSemestre("COMS8");
+							break;
+					}
+				}
+				else if(RecherchePattern.rechercheCommComplementaire(data))
+				{
+					switch(data)
+					{
+						case "Attention,":
+							data = it.next();
+							if (data.equals("vous"))
+							{
+								for(int i=0;i<6;i++)
+									data=it.next();
+								if(data.equals("NPML"))
+								{
+									data=it.next();
+									if(data.equals("Anglais"))
+										observation.getCommComplementaire().add("CC1");
+								}
+							}
 							break;
 					}
 				}

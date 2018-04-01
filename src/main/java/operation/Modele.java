@@ -17,7 +17,7 @@ import weka.filters.Filter;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.ConverterUtils.DataSink;
 
-public abstract class Modele {
+public class Modele {
     private static Map<String,String> listeDecision=new LinkedHashMap<String, String>();
     private static Map<String,String> listeCommSemestre=new LinkedHashMap<String, String>();
     private static ArrayList<String> keyLabel=new ArrayList<String>();
@@ -27,6 +27,19 @@ public abstract class Modele {
     // FEFF because this is the Unicode char represented by the UTF-8 byte order mark (EF BB BF).
     public static final String UTF8_BOM = "\uFEFF";
 
+    public Modele()
+    {
+        Modele.loadListeObservation(Modele.getListeDecision(),"src/main/java/files/decision.txt");
+        Modele.loadListeObservation(Modele.getListeCommSemestre(),"src/main/java/files/commSemestre.txt");
+        for(Map.Entry decision:listeDecision.entrySet())
+        {
+            keyLabel.add((String)decision.getKey());
+        }
+        for(Map.Entry commSemestre:listeCommSemestre.entrySet())
+        {
+            keyLabel.add((String)commSemestre.getKey());
+        }
+    }
     public static void setListeDecision(Map<String,String> listeDecision) {
         Modele.listeDecision = listeDecision;
     }
@@ -37,6 +50,11 @@ public abstract class Modele {
         }
         return s;
     }
+
+    public static ArrayList<String> getKeyLabel() {
+        return keyLabel;
+    }
+
     public static void ecritureDataset(String nomFichierTexte, String nomFichierDataSet){
         File file = new File(nomFichierDataSet);
         FileWriter fw = null;
@@ -65,16 +83,10 @@ public abstract class Modele {
         binaryVal.add("0");
         binaryVal.add("1");
 
-        int nbLabel=listeDecision.size()+listeCommSemestre.size();
-        for(Map.Entry decision:listeDecision.entrySet())
+        int nbLabel=keyLabel.size();
+        for(int i=0;i<nbLabel;i++)
         {
-            atts.add(new Attribute((String)decision.getKey(),binaryVal));
-            keyLabel.add((String)decision.getKey());
-        }
-        for(Map.Entry commSemestre:listeCommSemestre.entrySet())
-        {
-            atts.add(new Attribute((String)commSemestre.getKey(),binaryVal));
-            keyLabel.add((String)commSemestre.getKey());
+            atts.add(new Attribute(keyLabel.get(i),binaryVal));
         }
         // - numeric
         atts.add(new Attribute("scoreSemestre"));
