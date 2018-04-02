@@ -9,8 +9,11 @@
         <module name="Filtrage_PV_Jury_ISI" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="9">
       <module name="Filtrage_PV_Jury_ISI" target="9" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-cp C:\Users\david\Desktop\TX\GestionJuryISI\weka-dev-3.9.0.jar" />
   </component>
 </project>

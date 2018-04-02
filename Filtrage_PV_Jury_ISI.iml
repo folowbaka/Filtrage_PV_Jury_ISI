@@ -13,11 +13,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="9" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="pdfbox-app-2.0.3" level="project" />
+    <orderEntry type="library" name="meka-1.9.1" level="project" />
+    <orderEntry type="library" name="weka-dev-3.9.0" level="project" />
     <orderEntry type="library" name="bounce-0.18" level="project" />
     <orderEntry type="library" name="mst-4.0" level="project" />
-    <orderEntry type="library" name="meka-1.9.2" level="project" />
-    <orderEntry type="library" name="weka-dev-3.9.2" level="project" />
   </component>
 </module>
