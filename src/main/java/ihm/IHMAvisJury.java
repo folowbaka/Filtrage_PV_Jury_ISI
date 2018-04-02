@@ -413,7 +413,6 @@ public class IHMAvisJury extends JFrame{
 						{
 							ex.printStackTrace();
 						}
-                        ((TreeVisualizer)panelGraph[0].getComponentAt(0)).fitToScreen();
 					}
 			}
 		});

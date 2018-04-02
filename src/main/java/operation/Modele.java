@@ -180,13 +180,18 @@ public class Modele {
             e.printStackTrace();
         }
 
-        double percentage = Double.parseDouble("50");
+        double percentage = Double.parseDouble("100");
         int trainSize = (int) (data.numInstances() * percentage / 100.0);
         Instances train = new Instances(data, 0, trainSize);
         Instances test = new Instances(data, trainSize, data.numInstances() - trainSize);
 
         System.out.println("Build BR classifier on " + percentage + "%");
         BCC classifier = new BCC();
+        String[] options=classifier.getOptions();
+        for(int i=0;i<options.length;i++)
+        {
+            System.out.println(options[i]);
+        }
         // further configuration of classifier
         try
         {
@@ -198,12 +203,12 @@ public class Modele {
 
         System.out.println("Evaluate BR classifier on " + (100.0 - percentage) + "%");
         String top = "PCut1";
-        String vop = "3";
+        String vop = "4";
         Result result=null;
         try
         {
-            result = Evaluation.evaluateModel(classifier, train, test, top, vop);
-            System.out.println(result);
+            //result = Evaluation.evaluateModel(classifier, train, test, top, vop);
+            //System.out.println(result);
 
         }catch (Exception e)
         {
