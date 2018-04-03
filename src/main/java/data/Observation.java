@@ -7,6 +7,7 @@ public class Observation {
     private String commSemestre;
     private ArrayList<String> commComplementaire;
 
+    private String Semestre;
     public String getDecision() {
         return decision;
     }
@@ -34,5 +35,12 @@ public class Observation {
     public Observation()
     {
         this.commComplementaire=new ArrayList<String>();
+    }
+    public String getSemestre() {
+        return Semestre;
+    }
+
+    public void setSemestre(String semestre) {
+        Semestre = semestre;
     }
 }

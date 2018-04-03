@@ -71,6 +71,7 @@ public abstract class RecherchePattern {
 	private static String regexDecision="Poursuite";
 	private static String regexCommSemestre="Très|Mauvais|Semestre|Assez|Bon|Excellent";
 	private static String regexCommComplementaire="Attention,";
+	private static String regexUEAnglais="LE[0-9]{2}";
 
 	/**
 	 * recupereNom recherche avec un systeme de regex le nom de l'etudiant dans le fichier
@@ -188,6 +189,11 @@ public abstract class RecherchePattern {
 	}
 	public static boolean rechercheCommComplementaire(String contenu) {
 		if (Pattern.matches(regexCommComplementaire, contenu))
+			return true;
+		return false;
+	}
+	public static boolean rechercheUEAnglais(String contenu) {
+		if (Pattern.matches(regexUEAnglais, contenu))
 			return true;
 		return false;
 	}

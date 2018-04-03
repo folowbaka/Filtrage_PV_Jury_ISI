@@ -126,8 +126,13 @@ public class GestionData {
 		Observation observation=null;
 		while (it.hasNext()) {//on parcourt les donnees
 			String data = it.next();
-			if(RecherchePattern.rechercheDebutSemestre(data)){	//pour le premier semestre
+			if(RecherchePattern.rechercheDebutSemestre(data) &&  !enSemestre){	//pour le premier semestre
 				observation=new Observation();
+				data=it.next();
+				String semestreObservation=data;
+				data=it.next();
+				semestreObservation+=data;
+				observation.setSemestre(semestreObservation);
 				enSemestre = true;
 			}
 			if(enSemestre){//si on est dans la zone de semestres

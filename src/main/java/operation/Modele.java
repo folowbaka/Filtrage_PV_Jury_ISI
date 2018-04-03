@@ -2,6 +2,7 @@ package main.java.operation;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import main.java.data.Etudiant;
 import main.java.data.Module;
@@ -85,12 +86,18 @@ public class Modele {
         Iterator<Etudiant> it = etudiants.iterator();
         ArrayList<Attribute>     atts;
         ArrayList<String>      binaryVal;
+        ArrayList<String> semestreUTT;
+        ArrayList<String> anglaisUTT;
         Instances       data;
         double[]        vals;
 
         // 1. set up attributes
-        atts = new ArrayList<Attribute>();
-        binaryVal=new ArrayList<String>();
+        atts = new ArrayList<>();
+        binaryVal=new ArrayList<>();
+        semestreUTT=new ArrayList<>();
+        semestreUTT.add("TC1");semestreUTT.add("TC2");semestreUTT.add("TC3");semestreUTT.add("TC4");semestreUTT.add("TC5");semestreUTT.add("TC6");semestreUTT.add("ISI1");semestreUTT.add("ISI2");semestreUTT.add("ISI3");semestreUTT.add("ISI4");semestreUTT.add("ISI5");semestreUTT.add("ISI6");semestreUTT.add("ISI7");semestreUTT.add("ISI8");semestreUTT.add("ISI9");semestreUTT.add("STIC3");semestreUTT.add("HC1");semestreUTT.add("IDR1");
+        anglaisUTT=new ArrayList<>();
+        anglaisUTT.add("LE00");anglaisUTT.add("LE01");anglaisUTT.add("LE02");anglaisUTT.add("LE03");anglaisUTT.add("LE08");anglaisUTT.add("LEXX");
         binaryVal.add("0");
         binaryVal.add("1");
 
@@ -103,12 +110,18 @@ public class Modele {
         atts.add(new Attribute("scoreSemestre"));
         atts.add(new Attribute("nombreUe"));
         atts.add(new Attribute("nombreUeRatees"));
+        atts.add(new Attribute("semestreObservation",semestreUTT));
+        atts.add(new Attribute("UEAnglais",anglaisUTT));
         // 2. create Instances object
         data = new Instances("AvisJury: -C "+nbLabel, atts, 0);
 
         // 3. fill with data
+        int kebab=0;
         while(it.hasNext())
         {
+            if(kebab==331)
+                System.out.println("bite");
+            kebab++;
             Etudiant etu=it.next();
                 int semestre=etu.getModules().get(etu.getModules().size()-1).getSemestre();
                 vals = new double[data.numAttributes()];
@@ -127,17 +140,27 @@ public class Modele {
                 }
                 int nbModule=etu.getModules().size();
                 int nbUERatees=0;
+                String uEAnglais="";
                 for(int i=0;i<nbModule;i++)
                 {
                     if(etu.getModules().get(i).getSemestre()==semestre)
                     {
                         if (DecisionJury.estRatee(etu.getModules().get(i)))
                             nbUERatees++;
+                        if(RecherchePattern.rechercheUEAnglais(etu.getModules().get(i).getNom())) {
+                            uEAnglais = etu.getModules().get(i).getNom();
+                            if(Integer.parseInt(uEAnglais.substring(2))>8)
+                                uEAnglais="LEXX";
+                        }
                     }
                 }
                 vals[nbLabel]=DecisionJury.evalueSemestre(etu,semestre);
                 vals[nbLabel+1]=DecisionJury.nombreUeSemestre(etu,semestre);
                 vals[nbLabel+2]=nbUERatees;
+                vals[nbLabel+3]=semestreUTT.indexOf(etu.getObservation().getSemestre());
+                if(uEAnglais.equals(""))
+                    uEAnglais="LEXX";
+                vals[nbLabel+4]=anglaisUTT.indexOf(uEAnglais);
                 data.add(new DenseInstance(1.0, vals));
 
         }
