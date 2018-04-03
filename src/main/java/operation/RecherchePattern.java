@@ -66,7 +66,7 @@ public abstract class RecherchePattern {
 	/**
 	 * regex pour le parcours du module
 	 */
-	private static String regexParcours = "ISI|TC|HC|SRT|MASTER";
+	private static String regexParcours = "ISI|TC|HC|SRT|MASTER|RT";
 
 	private static String regexDecision="Poursuite";
 	private static String regexCommSemestre="Très|Mauvais|Semestre|Assez|Bon|Excellent";
