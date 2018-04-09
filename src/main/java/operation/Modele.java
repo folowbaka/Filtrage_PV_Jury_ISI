@@ -123,43 +123,49 @@ public class Modele {
                 System.out.println("bite");
             kebab++;
             Etudiant etu=it.next();
-            if(etu.getModules().size()>0) {
-                int semestre = etu.getModules().get(etu.getModules().size() - 1).getSemestre();
-                vals = new double[data.numAttributes()];
-                int indexDecision = keyLabel.indexOf(etu.getObservation().getDecision());
-                // - numeric
-                if (indexDecision > -1)
-                    vals[indexDecision] = 1;
-                int indexCommSemestre = keyLabel.indexOf(etu.getObservation().getCommSemestre());
-                if (indexCommSemestre > -1)
-                    vals[indexCommSemestre] = 1;
-                int nbCC = etu.getObservation().getCommComplementaire().size();
-                for (int i = 0; i < nbCC; i++) {
-                    int indexCommComplementaire = keyLabel.indexOf(etu.getObservation().getCommComplementaire().get(i));
-                    vals[indexCommComplementaire] = 1;
-                }
-                int nbModule = etu.getModules().size();
-                int nbUERatees = 0;
-                String uEAnglais = "";
-                for (int i = 0; i < nbModule; i++) {
-                    if (etu.getModules().get(i).getSemestre() == semestre) {
-                        if (DecisionJury.estRatee(etu.getModules().get(i)))
-                            nbUERatees++;
-                        if (RecherchePattern.rechercheUEAnglais(etu.getModules().get(i).getNom())) {
-                            uEAnglais = etu.getModules().get(i).getNom();
-                            if (Integer.parseInt(uEAnglais.substring(2)) > 8)
-                                uEAnglais = "LEXX";
+            if(etu.getModules().size()>0)
+            {
+                int nbObservation=etu.getObservation().size();
+                for(int i=0;i<nbObservation;i++)
+                {
+                    vals = new double[data.numAttributes()];
+                    int indexDecision = keyLabel.indexOf(etu.getObservation().get(i).getDecision());
+                    // - numeric
+                    if (indexDecision > -1)
+                        vals[indexDecision] = 1;
+                    int indexCommSemestre = keyLabel.indexOf(etu.getObservation().get(i).getCommSemestre());
+                    if (indexCommSemestre > -1)
+                        vals[indexCommSemestre] = 1;
+                    int nbCC = etu.getObservation().get(i).getCommComplementaire().size();
+                    for (int j = 0; j < nbCC; j++)
+                    {
+                        int indexCommComplementaire = keyLabel.indexOf(etu.getObservation().get(i).getCommComplementaire().get(j));
+                        vals[indexCommComplementaire] = 1;
+                    }
+                    int nbModule = etu.getModules().size();
+                    int nbUERatees = 0;
+                    String uEAnglais = "";
+                    for (int j = 0; j < nbModule; j++)
+                    {
+                        if (etu.getModules().get(j).getSemestre() == i) {
+                            if (DecisionJury.estRatee(etu.getModules().get(j)))
+                                nbUERatees++;
+                            if (RecherchePattern.rechercheUEAnglais(etu.getModules().get(j).getNom())) {
+                                uEAnglais = etu.getModules().get(j).getNom();
+                                if (Integer.parseInt(uEAnglais.substring(2)) > 8)
+                                    uEAnglais = "LEXX";
+                            }
                         }
                     }
+                    vals[nbLabel] = DecisionJury.evalueSemestre(etu, i);
+                    vals[nbLabel + 1] = DecisionJury.nombreUeSemestre(etu, i);
+                    vals[nbLabel + 2] = nbUERatees;
+                    vals[nbLabel + 3] = semestreUTT.indexOf(etu.getObservation().get(i).getSemestre());
+                    if (uEAnglais.equals(""))
+                        uEAnglais = "LEXX";
+                    vals[nbLabel + 4] = anglaisUTT.indexOf(uEAnglais);
+                    data.add(new DenseInstance(1.0, vals));
                 }
-                vals[nbLabel] = DecisionJury.evalueSemestre(etu, semestre);
-                vals[nbLabel + 1] = DecisionJury.nombreUeSemestre(etu, semestre);
-                vals[nbLabel + 2] = nbUERatees;
-                vals[nbLabel + 3] = semestreUTT.indexOf(etu.getObservation().getSemestre());
-                if (uEAnglais.equals(""))
-                    uEAnglais = "LEXX";
-                vals[nbLabel + 4] = anglaisUTT.indexOf(uEAnglais);
-                data.add(new DenseInstance(1.0, vals));
             }
         }
         pw.print(data);

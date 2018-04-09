@@ -34,7 +34,7 @@ public class Etudiant {
 	/**liste des modules fait par l'etudiant*/
 	private List<Module> modules = new ArrayList<Module>();
 
-	private Observation observation;
+	private ArrayList<Observation> observations;
 	/**
 	 * @param nom le nom de l'etudiant
 	 * @param prenom le prenom de l'etudiant
@@ -149,9 +149,6 @@ public class Etudiant {
 		this.nbSemestres = nbSemestres;
 	}
 
-	public void setObservation(Observation observation) {
-		this.observation = observation;
-	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -178,7 +175,11 @@ public class Etudiant {
 		return chaine;
 	}
 
-	public Observation getObservation() {
-		return observation;
+	public void setObservations(ArrayList<Observation> observations) {
+		this.observations = observations;
+	}
+
+	public ArrayList<Observation> getObservation() {
+		return observations;
 	}
 }

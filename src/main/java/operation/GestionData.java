@@ -115,14 +115,15 @@ public class GestionData {
 	 */
 	private static Etudiant ajoutEtudiantModele(List<String> dataEtudiant){
 		Etudiant etu=ajoutEtudiant(dataEtudiant);
-		Observation observation=ajoutObservationEtudiant(dataEtudiant);
-		etu.setObservation(observation);
+		ArrayList<Observation> observations=ajoutObservationEtudiant(dataEtudiant);
+		etu.setObservations(observations);
 		return etu;
 	}
-	private static Observation ajoutObservationEtudiant(List<String> dataEtudiant)
+	private static ArrayList<Observation> ajoutObservationEtudiant(List<String> dataEtudiant)
 	{
 		Iterator<String> it = dataEtudiant.iterator();
 		boolean enSemestre = false;
+		ArrayList<Observation> observations=new ArrayList<>();
 		Observation observation=null;
 		while (it.hasNext()) {//on parcourt les donnees
 			String data = it.next();
@@ -138,6 +139,7 @@ public class GestionData {
 			if(enSemestre){//si on est dans la zone de semestres
 				if(RecherchePattern.rechercheFinSemestre(data)){//si on est a la fin du semestre
 					enSemestre=false;
+					observations.add(observation);
 				}
 				else if(RecherchePattern.rechercheDecision(data)){//si on est dans la zone semestre
 					if(data.equals("Poursuite"))
@@ -210,7 +212,7 @@ public class GestionData {
 
 			}
 		}
-		return observation;
+		return observations;
 	}
 	private static Etudiant ajoutEtudiant(List<String> dataEtudiant){
 		String nom = RecherchePattern.recupereNom(dataEtudiant);//on recupere le nom
