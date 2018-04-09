@@ -6,7 +6,7 @@ public class Observation {
     private String decision;
     private String commSemestre;
     private ArrayList<String> commComplementaire;
-
+    private boolean filiere=false;
     private String Semestre;
     public String getDecision() {
         return decision;
@@ -42,5 +42,22 @@ public class Observation {
 
     public void setSemestre(String semestre) {
         Semestre = semestre;
+    }
+    public String getEtape()
+    {
+        if(this.Semestre.matches("TC[0-9]{1}"))
+            return "TC";
+        else if(this.Semestre.matches("(ISI|TC|HC|SRT|MASTER|RT|STIC)[0-9]{1}")) {
+            return "BR";
+        }
+        return null;
+    }
+
+    public boolean isFiliere() {
+        return filiere;
+    }
+
+    public void setFiliere(boolean filiere) {
+        this.filiere = filiere;
     }
 }

@@ -72,6 +72,7 @@ public abstract class RecherchePattern {
 	private static String regexCommSemestre="Très|Mauvais|Semestre|Assez|Bon|Excellent";
 	private static String regexCommComplementaire="Attention,";
 	private static String regexUEAnglais="LE[0-9]{2}";
+	private static String regexFiliere="MPL|MSI|MRI|LET|LIP|SFeRe|CelSME|SNM|TIM|EME|TCMC|TQM|CSR|SSC|TMSE";
 
 	/**
 	 * recupereNom recherche avec un systeme de regex le nom de l'etudiant dans le fichier
@@ -194,6 +195,11 @@ public abstract class RecherchePattern {
 	}
 	public static boolean rechercheUEAnglais(String contenu) {
 		if (Pattern.matches(regexUEAnglais, contenu))
+			return true;
+		return false;
+	}
+	public static boolean rechercheFiliere(String contenu) {
+		if (Pattern.matches(regexFiliere, contenu))
 			return true;
 		return false;
 	}

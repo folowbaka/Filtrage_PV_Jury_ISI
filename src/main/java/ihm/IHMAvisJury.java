@@ -20,10 +20,7 @@ import weka.classifiers.trees.J48;
 import weka.gui.treevisualizer.*;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,12 +43,13 @@ public class IHMAvisJury extends JFrame{
 	private static final long serialVersionUID = 1L;
 
 	private JTextField sourceTXT, cibleCSV, sourcePDF, cibleStat,cibleData,cibleTrainingData;
-	private JPanel jPanelCenter;
+	private JPanel jPanelCenter,cardOne,cardTwo;
 	private JLabel message;
 	private JTabbedPane[] panelGraph;
 	private File fileTXT, fileSourcePDF, fileDestPDF, fileDecisionJury, fileStats,fileDataSet;
 	private File dirAvisJury, dirStats, dirDatasTxt, dirAvisJuryCSV, dirAvisJuryPDF,dirDataSet;
 	private JButton exit, findPDF, conversionPdf_Txt, avisJury, statistique,bData,findDataSet,bDataTraining,bCompare;
+	private JComboBox cbTrainingOne,cbTrainingTwo;
 	private int screenWidth;
 	private int screenHeight;
 	private IHMAvisJury window=this;
@@ -227,6 +225,12 @@ public class IHMAvisJury extends JFrame{
 		jPanelBDataTraining.setLayout(new BoxLayout(jPanelBDataTraining,BoxLayout.LINE_AXIS));
 		bDataTraining = new JButton("Entrainer le modèle");
 		jPanelBDataTraining.add(bDataTraining);
+		JPanel comboBoxPane = new JPanel(); //use FlowLayout
+		String comboBoxItems[] = { "ALL", "TEST" };
+		this.cbTrainingOne = new JComboBox(comboBoxItems);
+		this.cbTrainingOne.setEditable(false);
+		comboBoxPane.add(cbTrainingOne);
+		jPanelBDataTraining.add(cbTrainingOne);
         bCompare = new JButton("Comparer");
 		jPanelBDataTraining.add(Box.createHorizontalGlue());
         jPanelBDataTraining.add(bCompare);
@@ -234,12 +238,18 @@ public class IHMAvisJury extends JFrame{
 		this.jPanelCenter.add(Box.createRigidArea(new Dimension(0,5)));
 		JPanel training=new JPanel();
         training.setLayout(new BoxLayout(training,BoxLayout.LINE_AXIS));
+        cardOne=new JPanel(new CardLayout());
+		cardTwo=new JPanel(new CardLayout());
 		this.panelGraph[0]=new JTabbedPane();
 		this.panelGraph[1]=new JTabbedPane();
 		this.panelGraph[0].setMinimumSize(new Dimension(800,600));
         this.panelGraph[1].setMinimumSize(new Dimension(800,600));
-        training.add(panelGraph[0]);
-        training.add(panelGraph[1]);
+        cardOne.add(this.panelGraph[0],"ALL");
+        cardOne.add(new JTabbedPane(),"TEST");
+        cardTwo.add(this.panelGraph[1],"ALL");
+        cardTwo.setVisible(false);
+        training.add(cardOne);
+        training.add(cardTwo);
         panelGraph[1].setVisible(false);
 		this.jPanelCenter.add(training);
         JPanel jPanelFoot=new JPanel();
@@ -370,6 +380,16 @@ public class IHMAvisJury extends JFrame{
 						message.setText("<html><span color='red'>la conversion du .pdf en .txt n'a pas été faite</span></html>");
 			}
 		});
+		cbTrainingOne.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					Object item = e.getItem();
+					CardLayout cl = (CardLayout)(cardOne.getLayout());
+					cl.show(cardOne, (String)e.getItem());
+				}
+			}
+		});
         bCompare.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -379,13 +399,16 @@ public class IHMAvisJury extends JFrame{
                 }
                 if(fileDataSet.exists())
                 {
-                    BCC cls = Modele.entrainement(fileDataSet);
+					String pathDataset=fileDataSet.getAbsolutePath()+"/"+fileDataSet.getName();
+                    BCC cls = Modele.entrainement(pathDataset+".arff");
+                    BCC clsNpml=Modele.entrainement(pathDataset+"_NPML.arff");
                     try {
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                     try {
                         drawGraph(1,cls);
+                        drawGraph(1,clsNpml,new String[]{"CC1"});
                     }catch (Exception ex)
                     {
                         ex.printStackTrace();
@@ -401,13 +424,16 @@ public class IHMAvisJury extends JFrame{
 				if(bDataTraining.isEnabled())
 					if(fileDataSet.exists())
 					{
-						BCC cls = Modele.entrainement(fileDataSet);
+						String pathDataset=fileDataSet.getAbsolutePath()+"/"+fileDataSet.getName();
+						BCC cls = Modele.entrainement(pathDataset+".arff");
+						BCC clsNpml=Modele.entrainement(pathDataset+"_NPML.arff");
 						try {
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
 						try {
 						    drawGraph(0,cls);
+							drawGraph(0,clsNpml,new String[]{"CC1"});
 							bCompare.setEnabled(true);
 						}catch (Exception ex)
 						{
@@ -552,7 +578,8 @@ public class IHMAvisJury extends JFrame{
 				filter = new FileNameExtensionFilter("PDF","pdf");
 				break;
 			case ARFFFile:
-				filter = new FileNameExtensionFilter("ARFF","arff");
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				chooser.setAcceptAllFileFilterUsed(false);
 				break;
 		}
 
@@ -561,7 +588,7 @@ public class IHMAvisJury extends JFrame{
 		int returnVal = chooser.showOpenDialog(null);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			SauvegardeRepertoire.ajoutPath(chooser);//permet de sauvegarder les repertoires
-			if(filter.getExtensions()[0].equals("pdf")) {
+			if(filter!=null && filter.getExtensions()[0].equals("pdf")) {
 				gestionFichier(chooser);
 				unlockButton();
 			}
@@ -631,7 +658,7 @@ public class IHMAvisJury extends JFrame{
 		fileStats = new File(dirStats.getAbsolutePath()+"/"+nomStats);
 		cibleStat.setText(dirStats.getAbsolutePath()+"/"+nomStats);
 
-        String nomDataSet= fileSourcePDF.getName().replace(".pdf", ".arff");
+        String nomDataSet= fileSourcePDF.getName().replace(".pdf", "/");
         fileDataSet= new File(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
         cibleData.setText(dirDataSet.getAbsolutePath()+"/"+nomDataSet);
 	}
@@ -792,7 +819,7 @@ public class IHMAvisJury extends JFrame{
     }
     private void drawGraph(int numPanelGraph,BCC cls) throws Exception
     {
-        int nbTree=Modele.getKeyLabel().size();
+        int nbTree=Modele.getKeyLabel().size()-1;
         panelGraph[numPanelGraph].removeAll();
         for(int i=0;i<nbTree;i++)
         {
@@ -803,4 +830,16 @@ public class IHMAvisJury extends JFrame{
         }
 
     }
+	private void drawGraph(int numPanelGraph,BCC cls,String[] Tab) throws Exception
+	{
+		int nbTree=Tab.length;
+		for(int i=0;i<nbTree;i++)
+		{
+			TreeVisualizer tv = new TreeVisualizer(null,
+					cls.graph().get(i),
+					new PlaceNode2());
+			panelGraph[numPanelGraph].add(Tab[i],tv);
+		}
+
+	}
 }

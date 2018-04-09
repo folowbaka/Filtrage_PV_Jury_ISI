@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import main.java.data.Etudiant;
 import main.java.data.Module;
+import main.java.ihm.IHMAvisJury;
 import meka.classifiers.multilabel.BCC;
 import meka.classifiers.multilabel.BR;
 import meka.classifiers.multilabel.Evaluation;
@@ -67,8 +68,13 @@ public class Modele {
         return keyLabel;
     }
 
-    public static void ecritureDataset(String nomFichierTexte, String nomFichierDataSet){
-        File file = new File(nomFichierDataSet);
+    public static void ecritureDataset(String nomFichierTexte, String nomFichierDataSet)
+    {
+        File fileDirectory=new File(nomFichierDataSet+"/");
+        if(!fileDirectory.exists())
+            fileDirectory.mkdir();
+        File file = new File(nomFichierDataSet+"/"+fileDirectory.getName()+".arff");
+        File fileNpml=new File(nomFichierDataSet+"/"+fileDirectory.getName()+"_NPML.arff");
         FileWriter fw = null;
         try {
 
@@ -86,89 +92,123 @@ public class Modele {
         Iterator<Etudiant> it = etudiants.iterator();
         ArrayList<Attribute>     atts;
         ArrayList<String>      binaryVal;
-        ArrayList<String> semestreUTT;
-        ArrayList<String> anglaisUTT;
+        ArrayList<String> etapeCursus;
         Instances       data;
+        Instances dataNpml;
+        ArrayList<String> anglaisUTT;
+        ArrayList<Attribute> attsNpml;
         double[]        vals;
+        double[]        valsNPML;
 
         // 1. set up attributes
         atts = new ArrayList<>();
+        attsNpml=new ArrayList<>();
         binaryVal=new ArrayList<>();
-        semestreUTT=new ArrayList<>();
-        semestreUTT.add("TC1");semestreUTT.add("TC2");semestreUTT.add("TC3");semestreUTT.add("TC4");semestreUTT.add("TC5");semestreUTT.add("TC6");semestreUTT.add("ISI1");semestreUTT.add("ISI2");semestreUTT.add("ISI3");semestreUTT.add("ISI4");semestreUTT.add("ISI5");semestreUTT.add("ISI6");semestreUTT.add("ISI7");semestreUTT.add("ISI8");semestreUTT.add("ISI9");semestreUTT.add("STIC3");semestreUTT.add("STIC4");semestreUTT.add("STIC5");semestreUTT.add("HC1");semestreUTT.add("IDR1");semestreUTT.add("RT1");semestreUTT.add("RT2");semestreUTT.add("RT3");semestreUTT.add("RT4");semestreUTT.add("RT5");semestreUTT.add("RT6");semestreUTT.add("RT7");semestreUTT.add("RT8");semestreUTT.add("RT9");
         anglaisUTT=new ArrayList<>();
-        anglaisUTT.add("LE00");anglaisUTT.add("LE01");anglaisUTT.add("LE02");anglaisUTT.add("LE03");anglaisUTT.add("LE08");anglaisUTT.add("LEXX");
+        anglaisUTT.add("LE00");anglaisUTT.add("LE01");anglaisUTT.add("LE02");anglaisUTT.add("LE03");anglaisUTT.add("LE04");anglaisUTT.add("LE08");anglaisUTT.add("LEXX");anglaisUTT.add("NoEnglish");
+        etapeCursus=new ArrayList<>();
+        etapeCursus.add("TC"); etapeCursus.add("BR");
         binaryVal.add("0");
         binaryVal.add("1");
 
         int nbLabel=keyLabel.size();
-        for(int i=0;i<nbLabel;i++)
+        for(int i=0;i<nbLabel-1;i++)
         {
+
             atts.add(new Attribute(keyLabel.get(i),binaryVal));
         }
+        attsNpml.add(new Attribute(keyLabel.get(nbLabel-1),binaryVal));
+        attsNpml.add(new Attribute("FIL",binaryVal));
+        attsNpml.add(new Attribute("UEAnglais",anglaisUTT));
+        attsNpml.add(new Attribute("etapeCursus",etapeCursus));
         // - numeric
         atts.add(new Attribute("scoreSemestre"));
         atts.add(new Attribute("nombreUe"));
         atts.add(new Attribute("nombreUeRatees"));
-        atts.add(new Attribute("semestreObservation",semestreUTT));
-        atts.add(new Attribute("UEAnglais",anglaisUTT));
+        atts.add(new Attribute("FIL",binaryVal));
+        atts.add(new Attribute("etapeCursus",etapeCursus));
+        //atts.add(new Attribute("semestreObservation",semestreUTT));
+
         // 2. create Instances object
-        data = new Instances("AvisJury: -C "+nbLabel, atts, 0);
+        data = new Instances("AvisJury: -C "+(nbLabel-1), atts, 0);
+        dataNpml=new Instances("AvisNpml: -C "+1,attsNpml,0);
 
         // 3. fill with data
         int kebab=0;
         while(it.hasNext())
         {
-            if(kebab==279)
-                System.out.println("bite");
-            kebab++;
+
             Etudiant etu=it.next();
             if(etu.getModules().size()>0)
             {
                 int nbObservation=etu.getObservation().size();
                 for(int i=0;i<nbObservation;i++)
                 {
-                    vals = new double[data.numAttributes()];
-                    int indexDecision = keyLabel.indexOf(etu.getObservation().get(i).getDecision());
-                    // - numeric
-                    if (indexDecision > -1)
-                        vals[indexDecision] = 1;
-                    int indexCommSemestre = keyLabel.indexOf(etu.getObservation().get(i).getCommSemestre());
-                    if (indexCommSemestre > -1)
-                        vals[indexCommSemestre] = 1;
-                    int nbCC = etu.getObservation().get(i).getCommComplementaire().size();
-                    for (int j = 0; j < nbCC; j++)
+
+                    if(etu.getObservation().get(i).getDecision()!=null && etu.getObservation().get(i).getCommSemestre()!=null)
                     {
-                        int indexCommComplementaire = keyLabel.indexOf(etu.getObservation().get(i).getCommComplementaire().get(j));
-                        vals[indexCommComplementaire] = 1;
-                    }
-                    int nbModule = etu.getModules().size();
-                    int nbUERatees = 0;
-                    String uEAnglais = "";
-                    for (int j = 0; j < nbModule; j++)
-                    {
-                        if (etu.getModules().get(j).getSemestre() == i) {
-                            if (DecisionJury.estRatee(etu.getModules().get(j)))
-                                nbUERatees++;
-                            if (RecherchePattern.rechercheUEAnglais(etu.getModules().get(j).getNom())) {
-                                uEAnglais = etu.getModules().get(j).getNom();
-                                if (Integer.parseInt(uEAnglais.substring(2)) > 8)
-                                    uEAnglais = "LEXX";
+                        if(kebab==797)
+                            System.out.println("kekdk");
+                        kebab++;
+                        vals = new double[data.numAttributes()];
+                        valsNPML=new double[dataNpml.numAttributes()];
+                        int indexDecision = keyLabel.indexOf(etu.getObservation().get(i).getDecision());
+                        // - numeric
+                        if (indexDecision > -1)
+                            vals[indexDecision] = 1;
+                        int indexCommSemestre = keyLabel.indexOf(etu.getObservation().get(i).getCommSemestre());
+                        if (indexCommSemestre > -1)
+                            vals[indexCommSemestre] = 1;
+                        int nbCC = etu.getObservation().get(i).getCommComplementaire().size();
+                        for (int j = 0; j < nbCC; j++) {
+                            int indexCommComplementaire = keyLabel.indexOf(etu.getObservation().get(i).getCommComplementaire().get(j));
+                            if(indexCommComplementaire==nbLabel-1)
+                                valsNPML[0]=1;
+                            else
+                                vals[indexCommComplementaire] = 1;
+                        }
+                        int nbModule = etu.getModules().size();
+                        int nbUERatees = 0;
+                        String uEAnglais = "";
+                        for (int j = 0; j < nbModule; j++) {
+                            if (etu.getModules().get(j).getSemestre() == i) {
+                                if (DecisionJury.estRatee(etu.getModules().get(j)))
+                                    nbUERatees++;
+                                if (RecherchePattern.rechercheUEAnglais(etu.getModules().get(j).getNom())) {
+                                    uEAnglais = etu.getModules().get(j).getNom();
+                                    if (Integer.parseInt(uEAnglais.substring(2)) > 8)
+                                        uEAnglais = "LEXX";
+                                }
                             }
                         }
+                        vals[nbLabel-1] = DecisionJury.evalueSemestre(etu, i);
+                        vals[nbLabel] = DecisionJury.nombreUeSemestre(etu, i);
+                        vals[nbLabel+1] = nbUERatees;
+                        int fil=etu.getObservation().get(i).isFiliere()?1:0;
+                        vals[nbLabel+2]=fil;
+                        vals[nbLabel+3]=etapeCursus.indexOf(etu.getObservation().get(i).getEtape());
+                        valsNPML[1]=fil;
+                         if (uEAnglais.equals(""))
+                            uEAnglais = "NoEnglish";
+                        valsNPML[2] = anglaisUTT.indexOf(uEAnglais);
+                        valsNPML[3]=etapeCursus.indexOf(etu.getObservation().get(i).getEtape());
+                        data.add(new DenseInstance(1.0, vals));
+                        dataNpml.add(new DenseInstance(1.0, valsNPML));
                     }
-                    vals[nbLabel] = DecisionJury.evalueSemestre(etu, i);
-                    vals[nbLabel + 1] = DecisionJury.nombreUeSemestre(etu, i);
-                    vals[nbLabel + 2] = nbUERatees;
-                    vals[nbLabel + 3] = semestreUTT.indexOf(etu.getObservation().get(i).getSemestre());
-                    if (uEAnglais.equals(""))
-                        uEAnglais = "LEXX";
-                    vals[nbLabel + 4] = anglaisUTT.indexOf(uEAnglais);
-                    data.add(new DenseInstance(1.0, vals));
                 }
             }
         }
         pw.print(data);
+        pw.close();
+        try {
+
+            fw = new FileWriter(fileNpml);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        bw = new BufferedWriter(fw);
+        pw = new PrintWriter(bw);
+        pw.print(dataNpml);
         pw.close();
     }
 
@@ -195,12 +235,11 @@ public class Modele {
 
     }
 
-    public static BCC entrainement(File fileDataset)
+    public static BCC entrainement(String fileDataset)
     {
-        System.out.println("Loading data: " + fileDataset.getName());
         Instances data=null;
         try {
-            data = DataSource.read(fileDataset.getAbsolutePath());
+            data = DataSource.read(fileDataset);
             MLUtils.prepareData(data);
         }catch(Exception e)
         {

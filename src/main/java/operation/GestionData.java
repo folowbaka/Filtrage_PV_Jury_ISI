@@ -135,6 +135,9 @@ public class GestionData {
 				semestreObservation+=data;
 				observation.setSemestre(semestreObservation);
 				enSemestre = true;
+				data=it.next();
+				if(RecherchePattern.rechercheFiliere(data))
+					observation.setFiliere(true);
 			}
 			if(enSemestre){//si on est dans la zone de semestres
 				if(RecherchePattern.rechercheFinSemestre(data)){//si on est a la fin du semestre
