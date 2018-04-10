@@ -432,7 +432,7 @@ public class IHMAvisJury extends JFrame{
 							BCC clsNpml = Modele.entrainement(pathDataset + "_" + e.getItem() + "_NPML.arff");
 							try {
 								drawGraph(i, cls, true);
-								drawGraph(i, clsNpml, new String[]{"CC1"}, true);
+								drawGraph(i, clsNpml, new String[]{"CC2"}, true);
 							} catch (Exception ex) {
 								ex.printStackTrace();
 							}
@@ -456,7 +456,7 @@ public class IHMAvisJury extends JFrame{
                     BCC clsNpml=Modele.entrainement(pathDataset+"_NPML.arff");
                     try {
                         drawGraph(0,cls,false);
-                        drawGraph(0,clsNpml,new String[]{"CC1"},false);
+                        drawGraph(0,clsNpml,new String[]{"CC2"},false);
                     }catch (Exception ex)
                     {
                         ex.printStackTrace();
@@ -481,7 +481,7 @@ public class IHMAvisJury extends JFrame{
 						}
 						try {
 						    drawGraph(0,cls,true);
-							drawGraph(0,clsNpml,new String[]{"CC1"},true);
+							drawGraph(0,clsNpml,new String[]{"CC2"},true);
 							bCompare.setEnabled(true);
 						}catch (Exception ex)
 						{

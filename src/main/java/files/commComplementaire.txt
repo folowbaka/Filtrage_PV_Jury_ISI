@@ -1,1 +1,2 @@
-CC1,Attention, vous n'avez toujours pas validé votre NPML Anglais
+CC1,Votre maintien à l'UTT dépendra de vos résultats au prochain semestre d'études
+CC2,Attention, vous n'avez toujours pas validé votre NPML Anglais

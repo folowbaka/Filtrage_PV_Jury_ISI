@@ -206,9 +206,14 @@ public class GestionData {
 								{
 									data=it.next();
 									if(data.equals("Anglais,"))
-										observation.getCommComplementaire().add("CC1");
+										observation.getCommComplementaire().add("CC2");
 								}
 							}
+							break;
+						case "Votre":
+							data=it.next();
+							if(data.equals("maintien"))
+								observation.getCommComplementaire().add("CC1");
 							break;
 					}
 				}

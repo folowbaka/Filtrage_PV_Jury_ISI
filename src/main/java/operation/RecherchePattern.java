@@ -70,7 +70,7 @@ public abstract class RecherchePattern {
 
 	private static String regexDecision="Poursuite";
 	private static String regexCommSemestre="Très|Mauvais|Semestre|Assez|Bon|Excellent";
-	private static String regexCommComplementaire="Attention,";
+	private static String regexCommComplementaire="Attention,|Votre";
 	private static String regexUEAnglais="LE[0-9]{2}";
 	private static String regexFiliere="MPL|MSI|MRI|LET|LIP|SFeRe|CelSME|SNM|TIM|EME|TCMC|TQM|CSR|SSC|TMSE";
 
