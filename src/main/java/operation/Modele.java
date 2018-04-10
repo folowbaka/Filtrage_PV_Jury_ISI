@@ -95,11 +95,13 @@ public class Modele {
         ArrayList<String> etapeCursus;
         Instances       data;
         Instances dataNpml;
+        Map<String,Instances> subData;
         ArrayList<String> anglaisUTT;
         ArrayList<Attribute> attsNpml;
         double[]        vals;
         double[]        valsNPML;
 
+        subData=new LinkedHashMap<>();
         // 1. set up attributes
         atts = new ArrayList<>();
         attsNpml=new ArrayList<>();
@@ -147,9 +149,6 @@ public class Modele {
 
                     if(etu.getObservation().get(i).getDecision()!=null && etu.getObservation().get(i).getCommSemestre()!=null)
                     {
-                        if(kebab==797)
-                            System.out.println("kekdk");
-                        kebab++;
                         vals = new double[data.numAttributes()];
                         valsNPML=new double[dataNpml.numAttributes()];
                         int indexDecision = keyLabel.indexOf(etu.getObservation().get(i).getDecision());
@@ -194,6 +193,17 @@ public class Modele {
                         valsNPML[3]=etapeCursus.indexOf(etu.getObservation().get(i).getEtape());
                         data.add(new DenseInstance(1.0, vals));
                         dataNpml.add(new DenseInstance(1.0, valsNPML));
+                        String  semestreObservation=etu.getObservation().get(i).getSemestre();
+                        if(!subData.containsKey(semestreObservation))
+                        {
+                            subData.put(semestreObservation, new Instances("AvisJury: -C " + (nbLabel - 1), atts, 0));
+                            subData.put(semestreObservation+"_NPML",new Instances("AvisNpml: -C "+1,attsNpml,0));
+                        }
+                        else
+                        {
+                            subData.get(semestreObservation).add(new DenseInstance(1.0, vals));
+                            subData.get(semestreObservation+"_NPML").add(new DenseInstance(1.0, valsNPML));
+                        }
                     }
                 }
             }
@@ -210,6 +220,20 @@ public class Modele {
         pw = new PrintWriter(bw);
         pw.print(dataNpml);
         pw.close();
+
+        for(Map.Entry sData:subData.entrySet())
+        {
+            try {
+
+                fw = new FileWriter(nomFichierDataSet+"/"+fileDirectory.getName()+"_"+sData.getKey()+".arff");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bw = new BufferedWriter(fw);
+            pw = new PrintWriter(bw);
+            pw.print(sData.getValue());
+            pw.close();
+        }
     }
 
     public static void loadListeObservation(Map liste,String nomFichier)
