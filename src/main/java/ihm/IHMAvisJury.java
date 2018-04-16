@@ -350,19 +350,31 @@ public class IHMAvisJury extends JFrame{
 
 				if(findDataSet.isEnabled())
 					choixRepertoire(ARFFFile);
-				cbTrainingOne.removeAllItems();
-				cbTrainingOne.insertItemAt("ALL",0);
-				for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles()) {
+				if(!bCompare.isEnabled())
+				{
+					cbTrainingOne.removeAllItems();
+					cbTrainingOne.insertItemAt("ALL",0);
+				}
+				else
+				{
+					cbTrainingTwo.removeAllItems();
+					cbTrainingTwo.insertItemAt("ALL",0);
+				}
+
+				for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles())
+				{
 					if (!fileEntry.isDirectory()) {
 						String[] fileName=fileEntry.getName().split("_");
 						fileName=fileName[fileName.length-1].split("\\.");
 						if(fileName[0].matches("(ISI|TC|HC|SRT|MASTER|RT|STIC|TC)[0-9]{1}"))
 						{
-							cbTrainingOne.addItem(fileName[0]);
 							JTabbedPane panel=new JTabbedPane();
-							cardOne.add(panel,fileName[0]);
-							panelGraphTraining.add(panel);
-						}
+							if(!bCompare.isEnabled())
+							{
+								cbTrainingOne.addItem(fileName[0]);
+								cardOne.add(panel,fileName[0]);
+								panelGraphTraining.add(panel);
+							}
 
 					}
 				}
