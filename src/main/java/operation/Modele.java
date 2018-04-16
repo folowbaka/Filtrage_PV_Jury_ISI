@@ -147,7 +147,7 @@ public class Modele {
                 for(int i=0;i<nbObservation;i++)
                 {
 
-                    if(etu.getObservation().get(i).getDecision()!=null && etu.getObservation().get(i).getCommSemestre()!=null)
+                    if(etu.getObservation().get(i).getDecision()!=null && etu.getObservation().get(i).getCommSemestre()!=null && etu.getObservation().get(i).getCommComplementaire().size()>0)
                     {
                         vals = new double[data.numAttributes()];
                         valsNPML=new double[dataNpml.numAttributes()];
