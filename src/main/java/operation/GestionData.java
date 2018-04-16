@@ -104,7 +104,7 @@ public class GestionData {
 				}
 			}
 		}
-		etudiants = suppressionDoublons(etudiants); //on supprime les doublons buggés
+		etudiants = suppressionDoublons(etudiants); //on supprime les doublons
 		return etudiants;
 	}
 
@@ -205,8 +205,9 @@ public class GestionData {
 								if(data.equals("NPML"))
 								{
 									data=it.next();
-									if(data.equals("Anglais,"))
+									if(data.equals("Anglais,")) {
 										observation.getCommComplementaire().add("CC2");
+									}
 								}
 							}
 							break;

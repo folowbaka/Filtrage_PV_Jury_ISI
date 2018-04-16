@@ -136,7 +136,6 @@ public class Modele {
         dataNpml=new Instances("AvisNpml: -C "+1,attsNpml,0);
 
         // 3. fill with data
-        int kebab=0;
         while(it.hasNext())
         {
 
@@ -144,6 +143,7 @@ public class Modele {
             if(etu.getModules().size()>0)
             {
                 int nbObservation=etu.getObservation().size();
+                String uEAnglais = "";
                 for(int i=0;i<nbObservation;i++)
                 {
 
@@ -161,14 +161,14 @@ public class Modele {
                         int nbCC = etu.getObservation().get(i).getCommComplementaire().size();
                         for (int j = 0; j < nbCC; j++) {
                             int indexCommComplementaire = keyLabel.indexOf(etu.getObservation().get(i).getCommComplementaire().get(j));
-                            if(indexCommComplementaire==nbLabel-1)
-                                valsNPML[0]=1;
+                            if(indexCommComplementaire==nbLabel-1) {
+                                valsNPML[0] = 1;
+                            }
                             else
                                 vals[indexCommComplementaire] = 1;
                         }
                         int nbModule = etu.getModules().size();
                         int nbUERatees = 0;
-                        String uEAnglais = "";
                         for (int j = 0; j < nbModule; j++) {
                             if (etu.getModules().get(j).getSemestre() == i) {
                                 if (DecisionJury.estRatee(etu.getModules().get(j)))
