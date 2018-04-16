@@ -1,25 +1,18 @@
 package main.java.ihm;
 
 import javax.swing.*;
-
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import main.java.operation.Modele;
-import main.java.operation.RecherchePattern;
 import meka.classifiers.multilabel.BCC;
-import meka.classifiers.multilabel.BR;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-
 import main.java.io.SauvegardeRepertoire;
 import main.java.operation.DecisionJury;
 import main.java.operation.Statistiques;
-import weka.classifiers.trees.J48;
 import weka.gui.treevisualizer.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
@@ -27,16 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static java.lang.Thread.sleep;
 
 /**
  * GestionStagesJuryIsi crée une fenétre graphique pour sélectionner le pv de jury ISI au format PDF
@@ -348,34 +333,35 @@ public class IHMAvisJury extends JFrame{
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 
-				if(findDataSet.isEnabled())
+				if (findDataSet.isEnabled())
 					choixRepertoire(ARFFFile);
-				if(!bCompare.isEnabled())
-				{
+				if (!bCompare.isEnabled()) {
 					cbTrainingOne.removeAllItems();
-					cbTrainingOne.insertItemAt("ALL",0);
-				}
-				else
-				{
+					cbTrainingOne.insertItemAt("ALL", 0);
+				} else {
 					cbTrainingTwo.removeAllItems();
-					cbTrainingTwo.insertItemAt("ALL",0);
+					cbTrainingTwo.insertItemAt("ALL", 0);
 				}
 
-				for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles())
-				{
+				for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles()) {
 					if (!fileEntry.isDirectory()) {
-						String[] fileName=fileEntry.getName().split("_");
-						fileName=fileName[fileName.length-1].split("\\.");
-						if(fileName[0].matches("(ISI|TC|HC|SRT|MASTER|RT|STIC|TC)[0-9]{1}"))
-						{
-							JTabbedPane panel=new JTabbedPane();
-							if(!bCompare.isEnabled())
-							{
+						String[] fileName = fileEntry.getName().split("_");
+						fileName = fileName[fileName.length - 1].split("\\.");
+						if (fileName[0].matches("(ISI|TC|HC|SRT|MASTER|RT|STIC|TC)[0-9]{1}")) {
+							JTabbedPane panel = new JTabbedPane();
+							if (!bCompare.isEnabled()) {
 								cbTrainingOne.addItem(fileName[0]);
-								cardOne.add(panel,fileName[0]);
+								cardOne.add(panel, fileName[0]);
 								panelGraphTraining.add(panel);
 							}
+							else
+							{
+								cbTrainingTwo.addItem(fileName[0]);
+								cardTwo.add(panel, fileName[0]);
+								panelGraphCompare.add(panel);
+							}
 
+						}
 					}
 				}
 			}
@@ -454,7 +440,41 @@ public class IHMAvisJury extends JFrame{
 				}
 			}
 		});
-        bCompare.addMouseListener(new MouseAdapter() {
+		cbTrainingTwo.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					CardLayout cl = (CardLayout)(cardTwo.getLayout());
+					int nbItem=cbTrainingTwo.getItemCount();
+					boolean foundPanel=false;
+					int i=0;
+					while (i<nbItem && !foundPanel)
+					{
+						if(((String)e.getItem()).equals(cbTrainingTwo.getItemAt(i)))
+							foundPanel=true;
+						else
+							i++;
+					}
+					if(panelGraphCompare.get(i).getComponents().length==0)
+					{
+						if(!e.getItem().equals("ALL")) {
+							String pathDataset = fileDataSet.getAbsolutePath() + "/" + fileDataSet.getName();
+							BCC cls = Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff");
+							BCC clsNpml = Modele.entrainement(pathDataset + "_" + e.getItem() + "_NPML.arff");
+							try {
+								drawGraph(i, cls, false);
+								drawGraph(i, clsNpml, new String[]{"CC2"}, false);
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+					}
+					cl.show(cardTwo, (String) e.getItem());
+				}
+			}
+		});
+
+		bCompare.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(!cardTwo.isVisible()) {
