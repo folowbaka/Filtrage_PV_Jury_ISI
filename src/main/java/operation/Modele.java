@@ -147,7 +147,7 @@ public class Modele {
                 for(int i=0;i<nbObservation;i++)
                 {
 
-                    if(etu.getObservation().get(i).getDecision()!=null && etu.getObservation().get(i).getCommSemestre()!=null && etu.getObservation().get(i).getCommComplementaire().size()>0)
+                    if((etu.getObservation().get(i).getDecision()!=null && etu.getObservation().get(i).getCommSemestre()!=null) || etu.getObservation().get(i).getCommComplementaire().size()>0)
                     {
                         vals = new double[data.numAttributes()];
                         valsNPML=new double[dataNpml.numAttributes()];
@@ -277,6 +277,7 @@ public class Modele {
 
         System.out.println("Build BR classifier on " + percentage + "%");
         BCC classifier = new BCC();
+        String option="-X Ibf -S 0 -W weka.classifiers.trees.J48 -- -C 0.25 -M 2";
         String[] options=classifier.getOptions();
         for(int i=0;i<options.length;i++)
         {
