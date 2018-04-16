@@ -277,15 +277,13 @@ public class Modele {
 
         System.out.println("Build BR classifier on " + percentage + "%");
         BCC classifier = new BCC();
-        String option="-X Ibf -S 0 -W weka.classifiers.trees.J48 -- -C 0.25 -M 2";
-        String[] options=classifier.getOptions();
-        for(int i=0;i<options.length;i++)
-        {
-            System.out.println(options[i]);
-        }
+        String option="-X Ibf -S 0 -W weka.classifiers.trees.J48 -- -L -O -U -M 2 -do-not-check-capabilities";
+        //"meka.classifiers.multilabel.BCC -X Ibf -S 0 -W weka.classifiers.trees.J48 -- -O -U -M 1 -J"
+        String[] options=option.split(" ");
         // further configuration of classifier
         try
         {
+            classifier.setOptions(options);
             classifier.buildClassifier(train);
         }catch (Exception e)
         {
