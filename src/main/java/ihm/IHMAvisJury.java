@@ -332,38 +332,8 @@ public class IHMAvisJury extends JFrame{
 		findDataSet.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-
 				if (findDataSet.isEnabled())
 					choixRepertoire(ARFFFile);
-				if (!bCompare.isEnabled()) {
-					cbTrainingOne.removeAllItems();
-					cbTrainingOne.insertItemAt("ALL", 0);
-				} else {
-					cbTrainingTwo.removeAllItems();
-					cbTrainingTwo.insertItemAt("ALL", 0);
-				}
-
-				for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles()) {
-					if (!fileEntry.isDirectory()) {
-						String[] fileName = fileEntry.getName().split("_");
-						fileName = fileName[fileName.length - 1].split("\\.");
-						if (fileName[0].matches("(ISI|TC|HC|SRT|MASTER|RT|STIC|TC)[0-9]{1}")) {
-							JTabbedPane panel = new JTabbedPane();
-							if (!bCompare.isEnabled()) {
-								cbTrainingOne.addItem(fileName[0]);
-								cardOne.add(panel, fileName[0]);
-								panelGraphTraining.add(panel);
-							}
-							else
-							{
-								cbTrainingTwo.addItem(fileName[0]);
-								cardTwo.add(panel, fileName[0]);
-								panelGraphCompare.add(panel);
-							}
-
-						}
-					}
-				}
 			}
 		});
 
@@ -477,21 +447,35 @@ public class IHMAvisJury extends JFrame{
 		bCompare.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!cardTwo.isVisible()) {
-                    cardTwo.setVisible(true);
-                    window.setBounds(screenWidth / 3 - (screenWidth / 2) / 2, screenHeight / 2 - 500, 1300, 950);
-                }
-                if(fileDataSet.exists())
-                {
-					String pathDataset=fileDataSet.getAbsolutePath()+"/"+fileDataSet.getName();
-                    BCC cls = Modele.entrainement(pathDataset+".arff");
-                    BCC clsNpml=Modele.entrainement(pathDataset+"_NPML.arff");
-                    try {
-                        drawGraph(0,cls,false);
-                        drawGraph(0,clsNpml,new String[]{"CC2"},false);
-                    }catch (Exception ex)
-                    {
-                        ex.printStackTrace();
+                if(bCompare.isEnabled()) {
+                    if (!cardTwo.isVisible()) {
+                        cardTwo.setVisible(true);
+                        window.setBounds(screenWidth / 3 - (screenWidth / 2) / 2, screenHeight / 2 - 500, 1300, 950);
+                    }
+                    if (fileDataSet.exists()) {
+                        cbTrainingTwo.removeAllItems();
+                        cbTrainingTwo.insertItemAt("ALL", 0);
+                        for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles()) {
+                            if (!fileEntry.isDirectory()) {
+                                String[] fileName = fileEntry.getName().split("_");
+                                fileName = fileName[fileName.length - 1].split("\\.");
+                                if (fileName[0].matches("(ISI|TC|HC|SRT|MASTER|RT|STIC|TC)[0-9]{1}")) {
+                                    JTabbedPane panel = new JTabbedPane();
+                                    cbTrainingTwo.addItem(fileName[0]);
+                                    cardTwo.add(panel, fileName[0]);
+                                    panelGraphCompare.add(panel);
+                                }
+                            }
+                        }
+                        String pathDataset = fileDataSet.getAbsolutePath() + "/" + fileDataSet.getName();
+                        BCC cls = Modele.entrainement(pathDataset + ".arff");
+                        BCC clsNpml = Modele.entrainement(pathDataset + "_NPML.arff");
+                        try {
+                            drawGraph(0, cls, false);
+                            drawGraph(0, clsNpml, new String[]{"CC2"}, false);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
 
@@ -504,6 +488,21 @@ public class IHMAvisJury extends JFrame{
 				if(bDataTraining.isEnabled())
 					if(fileDataSet.exists())
 					{
+					    cbTrainingOne.removeAllItems();
+                        cbTrainingOne.insertItemAt("ALL", 0);
+                        for (final File fileEntry : new File(cibleTrainingData.getText()).listFiles()) {
+                            if (!fileEntry.isDirectory()) {
+                                String[] fileName = fileEntry.getName().split("_");
+                                fileName = fileName[fileName.length - 1].split("\\.");
+                                if (fileName[0].matches("(ISI|TC|HC|SRT|MASTER|RT|STIC|TC)[0-9]{1}")) {
+                                    JTabbedPane panel = new JTabbedPane();
+                                    cbTrainingOne.addItem(fileName[0]);
+                                    cardOne.add(panel, fileName[0]);
+                                    panelGraphTraining.add(panel);
+
+                                }
+                            }
+                        }
 						String pathDataset=fileDataSet.getAbsolutePath()+"/"+fileDataSet.getName();
 						BCC cls = Modele.entrainement(pathDataset+".arff");
 						BCC clsNpml=Modele.entrainement(pathDataset+"_NPML.arff");
