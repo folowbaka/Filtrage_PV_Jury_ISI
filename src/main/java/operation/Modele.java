@@ -1,5 +1,6 @@
 package main.java.operation;
 import java.io.*;
+import java.lang.invoke.SwitchPoint;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import meka.classifiers.multilabel.Evaluation;
 import meka.core.MLUtils;
 import meka.core.Result;
 import meka.filters.unsupervised.attribute.MekaClassAttributes;
+import weka.classifiers.Classifier;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.*;
 import weka.filters.Filter;
@@ -259,8 +261,9 @@ public class Modele {
 
     }
 
-    public static BCC entrainement(String fileDataset)
+    public static Classifier entrainement(String fileDataset,int classifierType)
     {
+        Instances input;
         Instances data=null;
         try {
             data = DataSource.read(fileDataset);
@@ -270,39 +273,45 @@ public class Modele {
             e.printStackTrace();
         }
 
-        double percentage = Double.parseDouble("100");
-        int trainSize = (int) (data.numInstances() * percentage / 100.0);
-        Instances train = new Instances(data, 0, trainSize);
-        Instances test = new Instances(data, trainSize, data.numInstances() - trainSize);
 
-        System.out.println("Build BR classifier on " + percentage + "%");
-        BCC classifier = new BCC();
-        String option="-X Ibf -S 0 -W weka.classifiers.trees.J48 -- -L -O -U -M 2 -do-not-check-capabilities";
-        //"meka.classifiers.multilabel.BCC -X Ibf -S 0 -W weka.classifiers.trees.J48 -- -O -U -M 1 -J"
-        String[] options=option.split(" ");
-        // further configuration of classifier
-        try
-        {
-            classifier.setOptions(options);
+        Classifier classifier=null;
+        String[] options=null;
+        try{
+            switch(classifierType)
+            {
+                case 0:
+                    classifier=new BCC();
+                    options="-X Ibf -S 0 -W weka.classifiers.trees.J48 -- -L -O -U -M 2 -do-not-check-capabilities".split(" ");
+                    ((BCC) classifier).setOptions(options);
+                    break;
+                case 1:
+                    classifier=new BR();
+                    options="-W weka.classifiers.trees.J48 -- -L -O -U -M 2 -do-not-check-capabilities".split(" ");
+                    ((BR) classifier).setOptions(options);
+                    try {
+                        input = DataSource.read(fileDataset);
+                        MekaClassAttributes filter=new MekaClassAttributes();
+                        int nbAtt=input.numAttributes()-5;
+                        for(int i=3;i<nbAtt;i++)
+                            input.deleteAttributeAt(3);
+                        filter.setAttributeIndices("first-3");
+                        filter.setInputFormat(input);;
+                        data=Filter.useFilter(input,filter);
+
+                    }catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
+            double percentage = Double.parseDouble("100");
+            int trainSize = (int) (data.numInstances() * percentage / 100.0);
+            Instances train = new Instances(data, 0, trainSize);
             classifier.buildClassifier(train);
         }catch (Exception e)
         {
             e.printStackTrace();
-        }
-
-        System.out.println("Evaluate BR classifier on " + (100.0 - percentage) + "%");
-        String top = "PCut1";
-        String vop = "4";
-        Result result=null;
-        try
-        {
-            //result = Evaluation.evaluateModel(classifier, train, test, top, vop);
-            //System.out.println(result);
-
-        }catch (Exception e)
-        {
-
-        }
+        }        // further configuration of classifier
         return classifier;
     }
     public static Map<String, String> getListeCommSemestre() {

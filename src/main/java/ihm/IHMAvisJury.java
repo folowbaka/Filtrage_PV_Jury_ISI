@@ -7,11 +7,13 @@ import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import main.java.operation.Modele;
 import meka.classifiers.multilabel.BCC;
+import meka.classifiers.multilabel.BR;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import main.java.io.SauvegardeRepertoire;
 import main.java.operation.DecisionJury;
 import main.java.operation.Statistiques;
+import weka.classifiers.Classifier;
 import weka.gui.treevisualizer.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -22,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * GestionStagesJuryIsi crée une fenétre graphique pour sélectionner le pv de jury ISI au format PDF
@@ -396,9 +399,11 @@ public class IHMAvisJury extends JFrame{
 					{
 						if(!e.getItem().equals("ALL")) {
 							String pathDataset = fileDataSet.getAbsolutePath() + "/" + fileDataSet.getName();
-							BCC cls = Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff");
-							BCC clsNpml = Modele.entrainement(pathDataset + "_" + e.getItem() + "_NPML.arff");
+							BR clsBR = (BR)Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff",1);
+							BCC cls = (BCC)Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff",0);
+							BCC clsNpml = (BCC)Modele.entrainement(pathDataset + "_" + e.getItem() + "_NPML.arff",0);
 							try {
+								drawGraph(i, clsBR, true);
 								drawGraph(i, cls, true);
 								drawGraph(i, clsNpml, new String[]{"CC2"}, true);
 							} catch (Exception ex) {
@@ -429,9 +434,11 @@ public class IHMAvisJury extends JFrame{
 					{
 						if(!e.getItem().equals("ALL")) {
 							String pathDataset = fileDataSet.getAbsolutePath() + "/" + fileDataSet.getName();
-							BCC cls = Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff");
-							BCC clsNpml = Modele.entrainement(pathDataset + "_" + e.getItem() + "_NPML.arff");
+							BR clsBR = (BR)Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff",1);
+							BCC cls = (BCC)Modele.entrainement(pathDataset + "_" + e.getItem() + ".arff",0);
+							BCC clsNpml = (BCC)Modele.entrainement(pathDataset + "_" + e.getItem() + "_NPML.arff",0);
 							try {
+								drawGraph(i, clsBR, false);
 								drawGraph(i, cls, false);
 								drawGraph(i, clsNpml, new String[]{"CC2"}, false);
 							} catch (Exception ex) {
@@ -468,9 +475,11 @@ public class IHMAvisJury extends JFrame{
                             }
                         }
                         String pathDataset = fileDataSet.getAbsolutePath() + "/" + fileDataSet.getName();
-                        BCC cls = Modele.entrainement(pathDataset + ".arff");
-                        BCC clsNpml = Modele.entrainement(pathDataset + "_NPML.arff");
+						BR clsBR = (BR)Modele.entrainement(pathDataset + "_" + ".arff",1);
+                        BCC cls = (BCC)Modele.entrainement(pathDataset + ".arff",0);
+                        BCC clsNpml = (BCC)Modele.entrainement(pathDataset + "_NPML.arff",0);
                         try {
+							drawGraph(0, clsBR, false);
                             drawGraph(0, cls, false);
                             drawGraph(0, clsNpml, new String[]{"CC2"}, false);
                         } catch (Exception ex) {
@@ -504,13 +513,15 @@ public class IHMAvisJury extends JFrame{
                             }
                         }
 						String pathDataset=fileDataSet.getAbsolutePath()+"/"+fileDataSet.getName();
-						BCC cls = Modele.entrainement(pathDataset+".arff");
-						BCC clsNpml=Modele.entrainement(pathDataset+"_NPML.arff");
+						BR clsBR = (BR)Modele.entrainement(pathDataset+".arff",1);
+						BCC cls = (BCC)Modele.entrainement(pathDataset+".arff",0);
+						BCC clsNpml=(BCC)Modele.entrainement(pathDataset+"_NPML.arff",0);
 						try {
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
 						try {
+							drawGraph(0,clsBR,true);
 						    drawGraph(0,cls,true);
 							drawGraph(0,clsNpml,new String[]{"CC2"},true);
 							bCompare.setEnabled(true);
@@ -896,22 +907,35 @@ public class IHMAvisJury extends JFrame{
         jL.setHorizontalAlignment(SwingConstants.RIGHT);
         return jL;
     }
-    private void drawGraph(int numPanelGraph,BCC cls,boolean training) throws Exception
+    private void drawGraph(int numPanelGraph, Classifier cls, boolean training) throws Exception
     {
     	ArrayList<JTabbedPane> panelGraph=null;
     	if(training)
     		panelGraph=panelGraphTraining;
     	else
     		panelGraph=panelGraphCompare;
-        int nbTree=Modele.getKeyLabel().size()-1;
-        panelGraph.get(numPanelGraph).removeAll();
-        for(int i=0;i<nbTree;i++)
-        {
-            TreeVisualizer tv = new TreeVisualizer(null,
-                    cls.graph().get(i),
-                    new PlaceNode2());
+    	int begin=0;
+    	int nbTree=0;
+    	Map<Integer,String> graph=null;
+    	if(cls instanceof BCC)
+		{
+			nbTree=Modele.getKeyLabel().size()-1;
+			begin=Modele.getListeDecision().size();
+			graph=((BCC)cls).graph();
+		}
+		else if(cls instanceof BR)
+		{
+			panelGraph.get(numPanelGraph).removeAll();
+			nbTree=Modele.getListeDecision().size();
+			graph=((BR)cls).graph();
+		}
+		for(int i=begin;i<nbTree;i++)
+		{
+			TreeVisualizer tv = new TreeVisualizer(null,
+					graph.get(i),
+					new PlaceNode2());
 			panelGraph.get(numPanelGraph).add(Modele.getKeyLabel().get(i),tv);
-        }
+		}
 
     }
 	private void drawGraph(int numPanelGraph,BCC cls,String[] Tab,boolean training) throws Exception
