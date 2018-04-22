@@ -475,7 +475,7 @@ public class IHMAvisJury extends JFrame{
                             }
                         }
                         String pathDataset = fileDataSet.getAbsolutePath() + "/" + fileDataSet.getName();
-						BR clsBR = (BR)Modele.entrainement(pathDataset + "_" + ".arff",1);
+						BR clsBR = (BR)Modele.entrainement(pathDataset +".arff",1);
                         BCC cls = (BCC)Modele.entrainement(pathDataset + ".arff",0);
                         BCC clsNpml = (BCC)Modele.entrainement(pathDataset + "_NPML.arff",0);
                         try {
